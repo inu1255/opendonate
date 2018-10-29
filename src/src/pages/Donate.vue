@@ -97,7 +97,7 @@ export default class Donate extends Vue {
 	}
 	onDonate(body) {
 		if (body.price < 0.01) return this.$toast.success('感谢您的支持')
-		location.href = `http://localhost:8080/pay?u=3&price=${Math.floor(body.price * 100)}&ext=${encodeURIComponent(JSON.stringify({ email: body.email, remark: body.remark }))}`
+		location.href = `http://perpay.inu1255.cn/pay?u=1024&price=${Math.floor(body.price * 100)}&ext=${encodeURIComponent(JSON.stringify({ email: body.email, remark: body.remark }))}`
 	}
 	format(item) {
 		if (item.price) item.price /= 100
