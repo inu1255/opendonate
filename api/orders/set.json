@@ -1,0 +1,32 @@
+{
+    "name": "设置订单状态",
+    "method": "post",
+    "params": {
+        "id": {
+            "lbl": "订单ID",
+            "type": "int",
+            "need": true
+        },
+        "state": {
+            "lbl": "支付状态",
+            "type": "int",
+            "opts": [
+                "待审核",
+                "支付失败",
+                "支付成功"
+            ],
+            "need": true
+        },
+        "send": {
+            "lbl": "是否发货"
+        }
+    },
+    "grant": "{U}",
+    "error": {
+        "404": "订单不存在或无权限",
+        "405": "没有"
+    },
+    "ret": {
+        "no": 200
+    }
+}

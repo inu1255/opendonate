@@ -1,0 +1,49 @@
+{
+    "name": "查询订单",
+    "method": "get",
+    "params": {
+        "uID": {
+            "lbl": "用户ID",
+            "type": "int"
+        },
+        "type": {
+            "lbl": "支付方式",
+            "type": "int",
+            "opts": [
+                "支付宝",
+                "微信"
+            ]
+        },
+        "state": {
+            "lbl": "支付状态",
+            "type": "int",
+            "opts": [
+                "待审核",
+                "支付失败",
+                "支付成功"
+            ]
+        },
+        "ret": {
+            "lbl": "发货状态",
+            "type": "int",
+            "opts": [
+                "待发货",
+                "发货失败",
+                "发货成功"
+            ]
+        },
+        "create_min": {
+            "lbl": "下单时间下限",
+            "type": "int"
+        },
+        "create_max": {
+            "lbl": "下单时间上限",
+            "type": "int"
+        }
+    },
+    "grant": "{U}",
+    "pretreat": "if({U}.role!='admin'){}.uID={U}.id",
+    "ret": {
+        "no": 200
+    }
+}

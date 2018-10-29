@@ -1,0 +1,14 @@
+{
+    "name": "上传文件",
+    "method": "post",
+    "params": {
+        "f": {
+            "lbl": "文件",
+            "type": "file"
+        }
+    },
+    "grant": "{U}",
+    "ret": {
+        "no": 200
+    }
+}

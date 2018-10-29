@@ -1,0 +1,34 @@
+{
+    "name": "获取捐赠列表",
+    "method": "get",
+    "params": {
+        "uid": {
+            "lbl": "用户ID",
+            "type": "int",
+            "need": true
+        },
+        "offset": {
+            "lbl": "偏移",
+            "type": "int",
+			"range": [0],
+			"def": 0
+		},
+		"sort": {
+			"lbl": "排序",
+			"enum": [
+				"create_at",
+				"price"
+			]
+		},
+		"order": {
+			"lbl": "排序升降",
+			"enum": [
+				"desc",
+				"asc"
+			]
+		}
+    },
+    "ret": {
+        "no": 200
+    }
+}

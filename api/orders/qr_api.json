@@ -1,0 +1,23 @@
+{
+	"name": "统一设置发货接口",
+	"method": "post",
+	"params": {
+        "api": {
+			"lbl": "发货接口",
+			"rem": "http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign",
+			"len": [0, 256]
+        },
+        "cer": {
+			"lbl": "签名",
+			"len": [0, 32]
+        },
+        "back": {
+            "lbl": "支付后跳转链接",
+			"len": [0, 256]
+        }
+	},
+	"grant":"{U}",
+	"ret": {
+		"no": 200
+	}
+}

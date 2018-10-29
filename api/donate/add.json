@@ -1,0 +1,35 @@
+{
+    "name": "添加接口返回 添加捐赠记录",
+    "method": "post",
+    "params": {
+        "id": {
+            "lbl": "订单ID",
+            "type": "int",
+            "need": true
+        },
+        "price": {
+            "lbl": "金额",
+            "type": "int",
+            "need": true
+        },
+        "ext": {
+            "lbl": "附加信息",
+            "need": true
+        },
+        "t": {
+            "lbl": "请求时间(ms)",
+            "type": "int",
+            "need": true
+        },
+        "sign": {
+            "lbl": "签名",
+            "need": true
+        }
+    },
+    "error": {
+        "404": "附加信息缺少邮箱"
+    },
+    "ret": {
+        "no": 200
+    }
+}

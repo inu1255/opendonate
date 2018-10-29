@@ -1,0 +1,26 @@
+{
+    "name": "登录",
+	"method": "GET",
+	"params": {
+		"force": {
+			"lbl": "是否强制刷新",
+			"rem": "是否强制刷新个人信息",
+			"type": "int"
+		}
+	},
+    "grant": {
+        "$U": "需要登录"
+    },
+    "ret": {
+        "no": 200,
+        "msg": "",
+        "data": {
+            "id": 1026,
+            "email": "003@qq.com",
+            "account": "@@003",
+            "name": "akka",
+            "money": 200,
+            "invite_code": "%1TAyNgM1%%"
+        }
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "获取文件名单",
+    "method": "get",
+	"params": {},
+	"grant":"{U}",
+    "error": {},
+    "ret": {
+        "no": 200,
+        "msg": "",
+        "data": []
+    }
+}

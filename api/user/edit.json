@@ -1,0 +1,78 @@
+{
+    "name": "添加/修改个人信息",
+    "method": "POST",
+    "params": {
+		"id": {
+			"lbl": "用户ID",
+			"type": "int"
+		},
+        "name": {
+            "lbl": "姓名"
+        },
+		"account": {
+			"lbl": "账号"
+		},
+        "email": {
+            "lbl": "邮箱",
+			"reg": "^[\\w-]+@[\\w-]+(.[\\w-]+)+$"
+		},
+		"ecode": {
+            "lbl": "邮箱验证码"
+		},
+        "tel": {
+            "lbl": "电话号码",
+            "reg": "^1\\d{10}$"
+        },
+		"tcode": {
+            "lbl": "手机验证码"
+		},
+        "passwd": {
+            "lbl": "密码",
+            "len": [6, 32]
+		},
+		"passwd0": {
+			"lbl": "旧密码",
+            "len": [6, 32]
+		},
+        "avatar":{
+            "lbl": "头像url"
+        },
+        "profile": {
+            "lbl": "个人介绍"
+		},
+		"role": {
+			"lbl": "角色"
+		},
+		"money": {
+			"lbl": "金币",
+			"type": "int"
+		},
+		"sex": {
+			"lbl": "性别",
+			"type": "int"
+		},
+		"birth_at": {
+			"lbl": "生日",
+			"type": "int"
+		}
+	},
+	"pretreat":"if({U}.role!='admin'){{}.id={U}.id;delete {}.role;delete {}.account;delete {}.money;}", // 普通用户只能修改自己的信息, 管理员默认修改自己的信息
+	"grant": "{U}", // 登录后才能使用
+	"check":[
+		{"R": "{}.id", "M": "必须传ID"},
+		{"R": "{U}.role=='admin' || !{}.email || {}.ecode", "M": "修改邮箱时必须传邮箱验证码"},
+		{"R": "{U}.role=='admin' || !{}.tel || {}.tcode", "M": "修改手机时必须传手机验证码"},
+		{"R": "{U}.role=='admin' || !{}.passwd || {}.passwd0 || {}.ecode || {}.tcode", "M": "修改密码时必须传旧密码或验证码"}
+	],
+    "error": {
+		"405": "原密码错误",
+        "406": "验证码错误",
+        "407": "验证码已过期,请重新发送验证码"
+    },
+    "ret": {
+		"no": 200,
+		"data": { // 仅添加用户时返回
+			"id": 1 // 用户ID
+		}
+    }
+}
