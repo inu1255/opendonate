@@ -103,7 +103,7 @@ export default class Pay extends Vue {
 		return !this.query.id && [0, 1].indexOf(this.query.type) < 0
 	}
 	async iampay() {
-		await this.$get('orders/iampay', { id: this.query.id, token: this.query.t }, { loading: true })
+		await this.$get('orders/iampay', { id: this.query.id, token: this.$route.query.t }, { loading: true })
 		this.$alert('', '您的订单已收到\n商家确认后会在2小时内发货')
 		if (this.order.back) location.href = this.order.back
 	}
