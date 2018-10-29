@@ -254,6 +254,9 @@ exports.download = function(url, dstPath) {
     });
 };
 
+exports.createReadStream = fs.createReadStream;
+exports.createWriteStream = fs.createWriteStream;
+
 /**
  * 复制文件/文件夹
  * @param {String} srcPath 源文件名

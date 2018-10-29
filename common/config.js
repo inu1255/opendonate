@@ -34,7 +34,7 @@ const config = {
     code_expire: 600e3, // 验证码过期时间，10分钟
     xiaomi: { // 小米推送设置
         production: true,
-        appSecret: "abc"
+        appSecret: ""
     },
 
 };

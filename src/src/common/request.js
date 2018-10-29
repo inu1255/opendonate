@@ -19,8 +19,11 @@ request.interceptors.request.use(function(conf) {
     // 进度条
     store.commit("app.r", store.state.app.r + 1);
     if (conf.data instanceof FormData) {
-        let v = conf.data.get('f');
-        if (v instanceof File) {
+        let v;
+        conf.data.forEach(x => {
+            if (x instanceof File) v = x;
+        });
+        if (v) {
             store.commit("app.p", { percent: 0, name: v.name });
             conf.onUploadProgress = conf.onUploadProgress || function(e) {
                 var complete = (e.loaded / e.total * 100 | 0);

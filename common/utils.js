@@ -9,6 +9,7 @@ const querystring = require('querystring');
 const express = require('express');
 const sharp = require('sharp');
 const jsqr = require('./jsqr/jsQR');
+const readline = require('readline');
 
 exports.cross = function(req, res, next) {
     const origin = req.headers["origin"];
@@ -77,6 +78,24 @@ exports.probe = function(port) {
                 calledOnce = true;
                 resolve(result);
             }
+        });
+    });
+};
+
+/**
+ * @param {string} query
+ * @param {string} def
+ * @returns {Promise<string>}
+ */
+exports.readline = function(query, def) {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+    return new Promise((resolve, reject) => {
+        rl.question((query || '') + (def ? `(${def})` : ''), answer => {
+            rl.close();
+            resolve(answer || def || '');
         });
     });
 };

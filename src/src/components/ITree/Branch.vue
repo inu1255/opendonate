@@ -37,7 +37,7 @@ const NodeContent = {
 	}
 }
 
-@Component({ components: { NodeContent } })
+@Component({ name: 'Branch', components: { NodeContent } })
 export default class Branch extends Vue {
 	@Inject('i-tree-root') root;
 	@Inject('i-tree-value') value;

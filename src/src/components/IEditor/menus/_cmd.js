@@ -18,7 +18,7 @@ export default function(cmd, title, icon, isActive, fn) {
                     }
                 }
             }, [h('span', {
-                class: 'btn iconfont icon-' + (icon || cmd),
+                class: 'btn i i-' + (icon || cmd),
                 attrs: {
                     title: title
                 }

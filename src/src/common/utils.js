@@ -1,4 +1,5 @@
 import router from '../router';
+import lib from './lib';
 
 let userAgent = window.navigator.userAgent.toLowerCase();
 let utils = {
@@ -249,91 +250,6 @@ let utils = {
             return descriptor;
         };
     },
-    POW_VISIBLE: 0x01, //节点可见
-    POW_READ: 0x02, //查看
-    POW_DOWN: 0x04, //附件下载
-    POW_REPLY: 0x08, //回复
-    POW_POST: 0x10, //发布
-    POW_CHANGE: 0x20, //修改
-    POW_ADD: 0x40, //创建子节点
-    POW_EDIT: 0x80, //修改权限
-    POW_ADM: 0x100, // 管理(删除节点+设定用户对本节点的权限)
-    POW2READ: 0x03, //查看及以下
-    POW2DOWN: 0x07, //下载及以下
-    POW2REPLY: 0x0F, //回复及以下
-    POW2POST: 0x1F, //发布及以下
-    POW2CHANGE: 0x3F, //修改及以下
-    POW2ADD: 0x7F, //创建及以下
-    POW2EDIT: 0xFF, //修改及以下
-    POW2ADM: 0x1FF, //管理及以下
-    POW_ALL: 0x1FF, //所有权限
-    powLabel(pow) {
-        let s = [];
-        if (pow & utils.POW_VISIBLE) s.push("可见");
-        if (pow & utils.POW_READ) s.push("查看");
-        if (pow & utils.POW_DOWN) s.push("下载");
-        if (pow & utils.POW_REPLY) s.push("回复");
-        if (pow & utils.POW_POST) s.push("发布");
-        if (pow & utils.POW_CHANGE) s.push("编辑");
-        if (pow & utils.POW_ADD) s.push("创建");
-        if (pow & utils.POW_EDIT) s.push("修改");
-        if (pow & utils.POW_ADM) s.push("管理");
-        return s.join("+");
-    },
-    powKeys(pow) {
-        let s = [];
-        if (pow & utils.POW_VISIBLE) s.push(utils.POW_VISIBLE);
-        if (pow & utils.POW_READ) s.push(utils.POW_READ);
-        if (pow & utils.POW_DOWN) s.push(utils.POW_DOWN);
-        if (pow & utils.POW_REPLY) s.push(utils.POW_REPLY);
-        if (pow & utils.POW_POST) s.push(utils.POW_POST);
-        if (pow & utils.POW_CHANGE) s.push(utils.POW_CHANGE);
-        if (pow & utils.POW_ADD) s.push(utils.POW_ADD);
-        if (pow & utils.POW_EDIT) s.push(utils.POW_EDIT);
-        if (pow & utils.POW_ADM) s.push(utils.POW_ADM);
-        return s;
-    },
-    teamState: [, "申请中", "已拒绝", "团员"],
-    nodeType: [{ icon: 'folder', name: '禁用' }, { icon: 'folder', name: '可用' }, { icon: 'folder_shared', name: '禁用且共享' }, { icon: 'folder_shared', name: '共享' }],
-    postType: {
-        10: { icon: 'mode_comment', name: '闲聊' },
-        20: { icon: 'attach_file', name: '资料' },
-        100: { icon: 'details', name: '其他' },
-        150: { icon: 'highlight', name: '定义' },
-        160: { icon: 'border_color', name: '设计' },
-        210: { icon: 'trending_up', name: '调整' },
-        220: { icon: 'loyalty', name: '实现' },
-        230: { icon: 'touch_app', name: '测试' },
-        240: { icon: 'bug_report', name: 'bug' },
-    },
-    getPostTypes() {
-        let options = [];
-        for (let k in utils.postType) {
-            let v = utils.postType[k];
-            options.push({ label: v.name, value: +k, icon: v.icon });
-        }
-        return options;
-    },
-    uMap: {},
-    getUser(id) {
-        return utils.uMap[id] || {};
-    },
-    cacheUsers(users) {
-        for (let user of users) {
-            utils.uMap[user.id] = user;
-        }
-    }
 };
 
-utils.powName = [
-    [utils.POW_VISIBLE, "可见"],
-    [utils.POW_READ, "查看"],
-    [utils.POW_DOWN, "下载"],
-    [utils.POW_REPLY, "回复"],
-    [utils.POW_POST, "发布"],
-    [utils.POW_CHANGE, "编辑"],
-    [utils.POW_ADD, "创建"],
-    [utils.POW_EDIT, "修改"],
-    [utils.POW_ADM, "管理"],
-];
-export default utils;
+export default Object.assign(utils, lib);

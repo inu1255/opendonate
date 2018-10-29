@@ -18,6 +18,7 @@ switch (type) {
 		host = (/https?:\/\/[^/:]+/.exec(window.location.href))[0];
         if (dev) api = host + ":3000";
 		else api = location.protocol + "//" + location.host;
+		// api = 'http://perpay.inu1255.cn';
         break;
 }
 export default {
