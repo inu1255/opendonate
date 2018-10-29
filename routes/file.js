@@ -48,12 +48,14 @@ exports.image = async function(req, res) {
             data = img.qr.data;
             let location = img.qr.location;
             let left = Math.floor(Math.min(location.topLeftCorner.x, location.bottomLeftCorner.x));
+            left = Math.max(left, 0);
             let right = Math.floor(Math.max(location.topRightCorner.x, location.bottomRightCorner.x));
             let width = right - left;
             let top = Math.floor(Math.min(location.topLeftCorner.y, location.topRightCorner.y));
+            top = Math.max(top, 0);
             let bottom = Math.floor(Math.max(location.bottomRightCorner.y, location.bottomLeftCorner.y));
             let height = bottom - top;
-            rect = { left, top, width, height };
+            rect = { left, top, width: Math.min(img.width, width), height: Math.min(img.height, height) };
         } else if (body.qr > 1) return 406;
         if (body.qr > 2) { // 裁剪二维码
             buffer = await img.extract(rect).toFormat('png').toBuffer({ resolveWithObject: false });
@@ -63,7 +65,7 @@ exports.image = async function(req, res) {
     buffer = buffer || await cofs.readFile(body.f.path);
     cofs.rm(body.f.path);
     // let md5 = await sina.upload(buffer.toString('base64'));
-    let url = 'https://ws1.sinaimg.cn/mw690/bfdf4e9fgy1fwlq41mby8j20i40i0mzk';//`https://ws1.sinaimg.cn/mw690/${md5}`;
+    let url = 'https://ws1.sinaimg.cn/mw690/bfdf4e9fgy1fwlq41mby8j20i40i0mzk'; //`https://ws1.sinaimg.cn/mw690/${md5}`;
     return { url, rect, data };
 };
 
