@@ -117,14 +117,14 @@ exports.register = async function(req, res) {
             db.update("user", invitor).where("id", body.invite),
             db.insert("user", data)
         ]);
-        data.id = pack.insertId;
+        data.id = pack[2].insertId;
     } else {
         data.money = 100;
         let pack = await db.execSQL([
             db.update("verify", { rest: -1 }).where("title", title),
             db.insert("user", data)
         ]);
-        data.id = pack.insertId;
+        data.id = pack[1].insertId;
     }
     lib.afterRegist(data);
     return lib.getUserInfo(req, data);
