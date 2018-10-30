@@ -2,8 +2,8 @@
     "name": "获取捐赠列表",
     "method": "get",
     "params": {
-        "uid": {
-            "lbl": "用户ID",
+        "app_id": {
+            "lbl": "项目ID",
             "type": "int",
             "need": true
         },
@@ -27,7 +27,10 @@
 				"asc"
 			]
 		}
-    },
+	},
+	"error": {
+		"404": "项目不存在"
+	},
     "ret": {
         "no": 200
     }

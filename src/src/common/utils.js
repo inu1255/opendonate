@@ -244,12 +244,31 @@ let utils = {
                         this[name] = false;
                         return Promise.reject(err);
                     });
+                } else {
+                    this[name] = false;
                 }
                 return ret;
             };
             return descriptor;
         };
     },
+    leftJoin(list, data, key) {
+        let map = {};
+        for (let item of data) {
+            map[item.id] = item;
+        }
+        for (let item of list) {
+            let id = item[key + '_id'];
+            item[key] = map[id] || { id };
+        }
+    },
+    selectNode(el) {
+        let selection = window.getSelection();
+        selection.empty();
+        let range = document.createRange();
+        range.selectNode(el);
+        selection.addRange(range);
+    }
 };
 
 export default Object.assign(utils, lib);

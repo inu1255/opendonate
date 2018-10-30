@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import filter from './filter';
 
-import './directive';
+import './directive/focus';
+import './directive/select';
+
 import IListItem from './IListItem';
 Vue.component('IListItem', IListItem);
 import ITree from './ITree';

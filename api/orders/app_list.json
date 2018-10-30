@@ -1,5 +1,5 @@
 {
-    "name": "查看所有收款码",
+    "name": "查看所有项目",
     "method": "get",
     "params": {
         "uID": {

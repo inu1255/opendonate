@@ -290,7 +290,7 @@ class Table {
      */
     merge(db, run) {
         return db.execSQL(`show create table ${use(this._name)}`, true).then(rows => {
-			let table = new Table().parse(rows[0]['Create Table']);
+            let table = new Table().parse(rows[0]['Create Table']);
             let sqls = [];
             for (let f1 of this._fields) {
                 let f0;
@@ -318,7 +318,7 @@ class Table {
                 else if (f._type == 'PRIMARY')
                     sqls.unshift(`alter table ${use(this._name)} drop PRIMARY KEY`);
                 else if (f._type == 'FOREIGN')
-					sqls.unshift(`alter table ${use(this._name)} drop FOREIGN KEY ${use(f._name)}`);
+                    sqls.unshift(`alter table ${use(this._name)} drop FOREIGN KEY ${use(f._name)}`);
                 else {
                     let ok = true;
                     for (let f1 of this._fields) {

@@ -17,9 +17,6 @@ exports.qrAdd = async function(req, res) {
      * @property {string} [alipay] 支付宝 二维码链接
      * @property {string} [alipay_url] 支付宝 支付链接
      * @property {string} [wechat] 微信 二维码链接
-     * @property {string} [api] http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign
-     * @property {string} [cer] 签名
-     * @property {string} [back] 支付后跳转链接
      */
     /** @type {qr_add_body} */
     let body = req.body;
@@ -34,9 +31,6 @@ exports.qrAdd = async function(req, res) {
     } else {
         try {
             body.create_id = user.id;
-            body.api = body.api || '';
-            body.cer = body.cer || '';
-            body.back = body.back || '';
             body.id = await db.insert('qrcode', body).id();
         } catch (err) {
             if (err.errno == 1062) // 价格重复
@@ -83,6 +77,106 @@ exports.qrApi = async function(req, res) {
 /**
  * @param {{session:{user:User}}} req
  */
+exports.appAdd = async function(req, res) {
+    // gparam "../api/orders/app_add.json"
+    /**
+     * @typedef {object} app_add_body
+     * @property {number} [id] 项目ID
+     * @property {string} [title] 项目名称
+     * @property {string} [url] http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign
+     * @property {string} [cer] 签名
+     * @property {string} [back] 支付后跳转链接
+     */
+    /** @type {app_add_body} */
+    let body = req.body;
+    let user = req.session.user;
+    if (body.id) {
+        let app = await db.select('app').where({ id: body.id, create_id: user.id }).first();
+        if (!app) return 404;
+        let data = utils.clearKeys(body, app);
+        if (!Object.keys(data).length) return data;
+        await db.update('app', data).where({ id: body.id });
+        return data;
+    } else {
+        body.url = body.url || '';
+        body.cer = body.cer || '';
+        body.back = body.back || '';
+        body.create_id = user.id;
+        try {
+            body.id = await db.insert('app', body).id();
+        } catch (err) {
+            if (err.errno == 1062)
+                return 406;
+            throw err;
+        }
+        return body;
+    }
+};
+
+/**
+ * @param {{session:{user:User}}} req
+ */
+exports.appList = async function(req, res) {
+    // gparam "../api/orders/app_list.json"
+    /**
+     * @typedef {object} app_list_body
+     * @property {number} [uID] 用户ID
+     */
+    /** @type {app_list_body} */
+    let body = req.body;
+    let user = req.session.user;
+    let list = await db.select('app').where({ create_id: body.uID });
+    return { list };
+};
+
+/**
+ * @param {{session:{user:User}}} req
+ */
+exports.appDel = async function(req, res) {
+    // gparam "../api/orders/app_del.json"
+    /**
+     * @typedef {object} app_del_body
+     * @property {number} [id] 项目ID
+     */
+    /** @type {app_del_body} */
+    let body = req.body;
+    let user = req.session.user;
+    let has = await db.select('donate').where({ app_id: body.id }).first();
+    if (has) return 405;
+    let pack = await db.delete('app').where({ id: body.id, create_id: user.id });
+    if (!pack.affectedRows) return 404;
+};
+
+/**
+ * @param {{session:{user:User}}} req
+ */
+exports.appDemo = async function(req, res) {
+    // gparam "../api/orders/app_demo.json"
+    /**
+     * @typedef {object} app_demo_body
+     */
+    /** @type {app_demo_body} */
+    let body = req.body;
+    let user = req.session.user;
+    let data = { title: '捐赠Demo', url: '', cer: '', back: '', create_id: user.id };
+    try {
+        let id = await db.insert('app', data).id();
+        data.url = req.protocol + '://' + req.headers['host'] + `/api/donate/add?app_id=${id}`;
+        data.cer = utils.md5(config.secret + id);
+        data.back = req.protocol + '://' + req.headers['host'] + `/donate/${id}?page=1`;
+        await db.update('app', data).where({ id });
+        data.id = id;
+        return data;
+    } catch (err) {
+        if (err.errno == 1062)
+            return 405;
+        throw err;
+    }
+};
+
+/**
+ * @param {{session:{user:User}}} req
+ */
 exports.add = async function(req, res) {
     // gparam "../api/orders/add.json"
     /**
@@ -90,31 +184,37 @@ exports.add = async function(req, res) {
      * @property {number} user_id 用户ID
      * @property {number} price 金额(分)
      * @property {number} type 支付方式
+     * @property {string} [app] 项目名称
      * @property {string} [ext] 附加信息
      */
     /** @type {add_body} */
     let body = req.body;
     let user = req.session.user;
-    let [qrcode] = await db.execSQL(`select q.*,u.name from qrcode as q left join user as u on q.create_id=u.id where q.create_id=? and (q.price=? or q.price=0) order by q.price desc`, [body.user_id, body.price]);
+    let create = await db.select('user', 'name').where({ id: body.user_id }).first();
+    if (!create) return 404;
+    let qrcode = await db.select('qrcode').where(`create_id=? and (price=? or price=0)`, [body.user_id, body.price]).orderBy('price desc').first();
     if (!qrcode) return 404;
+    let app = await db.select('app').where(`create_id=? and title=?`, [body.user_id, body.app]).first();
+    app = app || { id: 0 };
     let types = [qrcode.alipay, qrcode.wechat];
     if (!types[body.type]) return 405;
     let data = {
         qr_id: qrcode.id,
+        app_id: app.id,
         type: body.type,
         ext: body.ext,
         ip: req.ip,
         ua: req.ua,
         create_at: +new Date,
-        user_id: qrcode.create_id,
+        user_id: body.user_id,
         price: body.price,
     };
     data.id = await db.insert('orders', data).id();
-    data.user_name = qrcode.name;
+    data.user_name = create.name;
     data.url = types[data.type];
     data.alipay_url = qrcode.alipay_url;
-    data.back = qrcode.back;
-    data.token = utils.md5('i37n' + data.id);
+    data.back = app.back;
+    data.token = utils.md5(config.secret + data.id);
     return data;
 };
 
@@ -130,15 +230,16 @@ exports.get = async function(req, res) {
      */
     /** @type {get_body} */
     let body = req.body;
-    let user = req.session.user;
-    if (body.t != utils.md5('i37n' + body.id))
+    if (body.t != utils.md5(config.secret + body.id))
         return 404;
-    let order = await db.select(
-        'orders as o left join qrcode as q on o.qr_id=q.id left join user as u on q.create_id=u.id',
-        `o.create_at,o.type,o.ext,if(o.type=0,q.alipay,q.wechat) as url,q.alipay_url,q.back,u.name as user_name,o.price`
-    ).where({ 'o.id': body.id }).first();
+    let order = await db.select('orders', 'create_at,type,price,qr_id,user_id,app_id').where({ id: body.id }).first();
     if (!order) return 404;
-
+    let qrcode = await db.select('qrcode', `${['alipay','wechat'][order.type]} as url,alipay_url`).where({ id: order.qr_id }).first();
+    Object.assign(order, qrcode);
+    let receive = await db.select('user', 'name').where({ id: order.user_id }).first();
+    Object.assign(order, receive);
+    let app = await db.select('app', 'back').where({ id: order.app_id }).first();
+    Object.assign(order, app);
     return order;
 };
 
@@ -155,7 +256,7 @@ exports.iampay = async function(req, res) {
     /** @type {iampay_body} */
     let body = req.body;
     let user = req.session.user;
-    if (body.token != utils.md5('i37n' + body.id))
+    if (body.token != utils.md5(config.secret + body.id))
         return 404;
     await db.update('orders', { pay_at: +new Date }).where({ id: body.id });
 };
@@ -177,27 +278,33 @@ exports.search = async function(req, res) {
     /** @type {search_body} */
     let body = req.body;
     let user = req.session.user;
-    let sql = db.select('orders as o left join qrcode as q on o.qr_id=q.id', 'o.id,o.ip,o.ua,o.create_at,o.state,o.pay_at,o.ext,o.type,o.price,o.ret,q.api').limit(1000);
+    let sql = db.select('orders', 'id,ip,ua,create_at,state,pay_at,ext,type,price,ret,app_id').limit(1000);
     if (body.uID) {
-        sql.where('o.user_id', body.uID);
+        sql.where('user_id', body.uID);
     }
     if (body.type != null) {
-        sql.where('o.type', body.type);
+        sql.where('type', body.type);
     }
     if (body.state != null) {
-        sql.where('o.state', body.state);
+        sql.where('state', body.state);
     }
     if (body.ret != null) {
-        sql.where('o.ret', body.ret);
+        sql.where('ret', body.ret);
     }
     if (body.create_min) {
-        sql.where('o.create_at', '>=', body.create_min);
+        sql.where('create_at', '>=', body.create_min);
     }
     if (body.create_max) {
-        sql.where('o.create_at', '<=', body.create_max);
+        sql.where('create_at', '<=', body.create_max);
     }
     let list = await sql;
-    return { list };
+    let aMap = {};
+    for (let item of list) {
+        aMap[item.app_id] = true;
+    }
+    let aIDs = Object.keys(aMap);
+    let apps = await db.select('app', 'id,title').where('id', 'in', aIDs);
+    return { list, apps };
 };
 
 /**
@@ -210,18 +317,23 @@ exports.set = async function(req, res) {
      * @property {number} id 订单ID
      * @property {number} state 支付状态
      * @property {string} [send] 是否发货
+     * @property {string} [ext] 附加信息
      */
     /** @type {set_body} */
     let body = req.body;
     let user = req.session.user;
-    let order = await db.select('orders as o left join qrcode as q on o.qr_id=q.id', 'o.id,o.price,o.state,o.ret,o.ext,q.api,q.cer').where({ 'o.id': body.id, 'q.create_id': user.id }).first();
+    let order = await db.select('orders', 'id,price,state,ret,ext,app_id').where({ id: body.id, user_id: user.id }).first();
     if (!order) return 404;
+    let app = await db.select('app', 'url,cer').where({ id: order.app_id }).first();
+    app = app || {};
     if (body.send) {
-        if (order.api) {
+        if (app.url) {
             let t = +new Date;
-            let sign = utils.md5(order.id + order.price + (order.ext || '') + t + order.cer);
+            let ext = body.ext || order.ext;
+            let sign = utils.md5(order.id + order.price + (ext || '') + t + app.cer);
             try {
-                let ret = await axios.post(order.api, { id: order.id, price: order.price, ext: order.ext, t, sign });
+                console.log(app.url);
+                let ret = await axios.post(app.url, { id: order.id, price: order.price, ext, t, sign });
                 if (ret.data.no == 200) body.ret = 2;
                 else {
                     body.ret = 1;
@@ -229,6 +341,7 @@ exports.set = async function(req, res) {
                 }
             } catch (err) {
                 body.msg = err + '';
+                // console.log(err);
                 body.ret = 1;
             }
         } else {

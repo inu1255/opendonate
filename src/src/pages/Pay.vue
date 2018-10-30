@@ -78,6 +78,7 @@ export default class Pay extends Vue {
 		price: 0, // 支付金额
 		ext: '', // 附加信息
 		type: '', // 支付方式
+		app: '',
 		id: '',
 		t: '',
 	})
@@ -122,9 +123,12 @@ export default class Pay extends Vue {
 				price: this.query.price,
 				title: this.query.title,
 				type: this.query.type,
+				app: this.query.app,
 				ext: this.query.ext,
 			}
 			order = await this.$post('orders/add', data, { loading: true })
+			this.query.id = order.id
+			this.query.token = order.token
 			utils.replace({ id: order.id, t: order.token })
 		}
 		this.s = Math.floor((order.create_at + 120e3 - new Date()) / 1e3)

@@ -4,6 +4,7 @@ const Pay = function() { return import('../pages/Pay'); };
 const QrCode = function() { return import('../pages/QrCode'); };
 const Orders = function() { return import('../pages/Orders'); };
 const Donate = function() { return import('../pages/Donate'); };
+const Project = function() { return import('../pages/Project'); };
 
 let routes = [];
 
@@ -13,6 +14,13 @@ routes.push({
     name: "收款码",
     icon: "qrcode",
     component: QrCode,
+    menu: true,
+    meta: { login: true }
+},{
+    path: '/project',
+    name: '项目',
+    icon: "api",
+    component: Project,
     menu: true,
     meta: { login: true }
 }, {

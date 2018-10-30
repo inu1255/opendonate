@@ -26,12 +26,13 @@
 					<td>{{row.id}}</td>
 					<td>{{row.ip}}</td>
 					<td><span :title="row.ua">{{row.os}}</span></td>
-					<td class="tac">{{payType[row.type]}}</td>
-					<td class="tac">{{row.price?row.price:'不设'}}</td>
+					<td>{{row.app.title}}</td>
+					<td>{{payType[row.type]}}</td>
+					<td>{{row.price?row.price:'不设'}}</td>
 					<td>
 						<i-date :value="row.create_at" :digits="1"></i-date>
 					</td>
-					<td class="tac">
+					<td>
 						<span v-if="row.pay_at">
 							{{row.pay_at-row.create_at|diff}}后
 						</span>
@@ -43,13 +44,13 @@
 						<mu-menu cover placement="bottom-end">
 							<mu-icon value="more_vert"></mu-icon>
 							<mu-list slot="content">
-								<mu-list-item v-show="!row.api" @click="onOk(row,2)" button>
+								<mu-list-item v-show="!row.app_id" @click="onOk(row,2)" button>
 									<mu-list-item-title>确认</mu-list-item-title>
 								</mu-list-item>
-								<mu-list-item v-show="!row.api" @click="onOk(row,2,1)" button>
+								<mu-list-item v-show="!row.app_id" @click="onOk(row,2,1)" button>
 									<mu-list-item-title>已发货</mu-list-item-title>
 								</mu-list-item>
-								<mu-list-item v-show="row.api" @click="onOk(row,2,1)" button>
+								<mu-list-item v-show="row.app_id" @click="onOk(row,2,1)" button>
 									<mu-list-item-title>确认并发货</mu-list-item-title>
 								</mu-list-item>
 								<mu-list-item @click="onOk(row,1)" button>
@@ -89,6 +90,11 @@ export default class Orders extends Vue {
 		name: 'ua',
 		sortable: true,
 		width: 84
+	}, {
+		title: '项目名称',
+		name: 'title',
+		sortable: true,
+		width: 128
 	}, {
 		title: '支付方式',
 		name: 'type',
@@ -144,7 +150,7 @@ export default class Orders extends Vue {
 		item.os = utils.os(item.ua)
 	}
 	async onOk(row, state, send) {
-		if (send && row.api && row.ret > 1) {
+		if (send && row.app_id && row.ret > 1) {
 			let { result } = await this.$message.confirm('该订单已发货成功，确定要再次发货?')
 			if (!result) return
 		}
@@ -164,7 +170,9 @@ export default class Orders extends Vue {
 			create_max: max,
 			create_min: min
 		})
-		let { list } = await this.$get('orders/search', data)
+		let { list, apps } = await this.$get('orders/search', data)
+		utils.leftJoin(list, apps, 'app')
+		console.log(list)
 		for (let item of list) {
 			this.format(item)
 		}

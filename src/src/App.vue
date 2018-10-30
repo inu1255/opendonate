@@ -5,9 +5,7 @@
 			<app-nav :md="md"></app-nav>
 			<mu-container>
 				<mu-fade-transition>
-					<keep-alive>
 						<router-view />
-					</keep-alive>
 				</mu-fade-transition>
 			</mu-container>
 		</div>

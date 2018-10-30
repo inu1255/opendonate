@@ -13,7 +13,7 @@
 			"type": "int",
 			"need": true,
 			"range": [0]
-        },
+		},
         "type": {
 			"lbl": "支付方式",
 			"type": "int",
@@ -23,6 +23,10 @@
 			],
 			"need": true
         },
+		"app": {
+            "lbl": "项目名称",
+			"len": [0, 16]
+		},
         "ext": {
 			"lbl": "附加信息",
 			"len": [0, 2048]

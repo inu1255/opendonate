@@ -22,19 +22,6 @@
         "wechat": {
             "lbl": "微信 二维码链接",
 			"len": [0, 256]
-        },
-        "api": {
-			"lbl": "发货接口",
-			"rem": "http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign",
-			"len": [0, 256]
-        },
-        "cer": {
-			"lbl": "签名",
-			"len": [0, 32]
-        },
-        "back": {
-            "lbl": "支付后跳转链接",
-			"len": [0, 256]
         }
 	},
 	"grant":"{U}",

@@ -1,5 +1,3 @@
-import Vue from 'vue';
-
 export default {
     dragData: {
         bind: function(el, binding) {

@@ -16,7 +16,7 @@
 			</ul>
 		</i-header>
 		<mu-container>
-			<h3>名称: {{user.name}}</h3>
+			<h3 style="font-weight:400;">项目名称: <b>{{app.title}}</b> 作者: <b>{{user.name}}</b></h3>
 			<pre v-if="user.profile">介绍：{{user.profile}}</pre>
 			<br>
 			<mu-paper :z-depth="1">
@@ -80,6 +80,7 @@ export default class Donate extends Vue {
 	list = []
 	total = 0
 	user = {}
+	app = {}
 	sort = {
 		name: 'create_at',
 		order: 'desc'
@@ -97,7 +98,7 @@ export default class Donate extends Vue {
 	}
 	onDonate(body) {
 		if (body.price < 0.01) return this.$toast.success('感谢您的支持')
-		location.href = `http://perpay.inu1255.cn/pay?u=1024&price=${Math.floor(body.price * 100)}&ext=${encodeURIComponent(JSON.stringify({ email: body.email, remark: body.remark }))}`
+		location.href = `${location.protocol}//${location.host}/pay?app=${encodeURIComponent(this.app.title)}&u=${this.app.create_id}&price=${Math.floor(body.price * 100)}&ext=${encodeURIComponent(JSON.stringify({ email: body.email, remark: body.remark }))}`
 	}
 	format(item) {
 		if (item.price) item.price /= 100
@@ -105,13 +106,14 @@ export default class Donate extends Vue {
 	@Watch('page')
 	@utils.loading()
 	async refresh() {
-		let { list, total, user } = await this.$get('donate/list', { uid: this.$route.params.id, offset: Math.max(this.query.page - 1, 0) * 15, sort: this.sort.name, order: this.sort.order })
+		let { list, total, user, app } = await this.$get('donate/list', { app_id: this.$route.params.id, offset: Math.max(this.query.page - 1, 0) * 15, sort: this.sort.name, order: this.sort.order })
 		for (let item of list) {
 			this.format(item)
 		}
 		this.list = list
 		this.total = total
 		this.user = user
+		this.app = app
 	}
 	mounted() {
 		this.refresh()
