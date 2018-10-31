@@ -303,7 +303,8 @@ exports.search = async function(req, res) {
         aMap[item.app_id] = true;
     }
     let aIDs = Object.keys(aMap);
-    let apps = await db.select('app', 'id,title').where('id', 'in', aIDs);
+	let apps = [];
+	if(aIDs.length) apps = await db.select('app', 'id,title').where('id', 'in', aIDs);
     return { list, apps };
 };
 
@@ -332,7 +333,6 @@ exports.set = async function(req, res) {
             let ext = body.ext || order.ext;
             let sign = utils.md5(order.id + order.price + (ext || '') + t + app.cer);
             try {
-                console.log(app.url);
                 let ret = await axios.post(app.url, { id: order.id, price: order.price, ext, t, sign });
                 if (ret.data.no == 200) body.ret = 2;
                 else {

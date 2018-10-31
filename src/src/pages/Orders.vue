@@ -50,6 +50,9 @@
 								<mu-list-item v-show="!row.app_id" @click="onOk(row,2,1)" button>
 									<mu-list-item-title>已发货</mu-list-item-title>
 								</mu-list-item>
+								<mu-list-item v-show="row.app_id" @click="onExt(row)" button>
+									<mu-list-item-title>修改附加信息</mu-list-item-title>
+								</mu-list-item>
 								<mu-list-item v-show="row.app_id" @click="onOk(row,2,1)" button>
 									<mu-list-item-title>确认并发货</mu-list-item-title>
 								</mu-list-item>
@@ -160,6 +163,17 @@ export default class Orders extends Vue {
 		if (ret.ret) row.ret = ret.ret
 		row.state = state
 	}
+	async onExt(row) {
+		let { result, value } = await this.$prompt('修改附加信息', {
+			inputValue: row.ext,
+		})
+		if (result) {
+			let ret = await this.$post('orders/set', { id: row.id, ext: value }, { loading: true })
+			if (ret.msg) this.$message.alert(JSON.stringify(ret.msg), '接口报错')
+			else this.$message.alert('修改成功')
+			row.ext = value
+		}
+	}
 	@utils.loading()
 	async refresh() {
 		let { min, max } = this.$refs.date.getRange()
@@ -172,7 +186,6 @@ export default class Orders extends Vue {
 		})
 		let { list, apps } = await this.$get('orders/search', data)
 		utils.leftJoin(list, apps, 'app')
-		console.log(list)
 		for (let item of list) {
 			this.format(item)
 		}

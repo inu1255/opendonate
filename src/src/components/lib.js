@@ -20,6 +20,8 @@ import IHeader from './IHeader';
 Vue.component("IHeader", IHeader);
 import IForm from './IForm';
 Vue.component("IForm", IForm);
+import IHide from './IHide';
+Vue.component("IHide", IHide);
 for (let k in filter) {
     Vue.filter(k, filter[k]);
 }

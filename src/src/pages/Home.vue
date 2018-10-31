@@ -9,8 +9,8 @@
 			</mu-button>
 			<ul>
 				<router-link tag="li" to="/">首页</router-link>
-				<router-link tag="li" to="/donate/1024?page=0&n=1">支付体验</router-link>
-				<router-link tag="li" to="/donate/1024">捐赠名单</router-link>
+				<router-link tag="li" to="/donate/1?page=0&n=1">支付体验</router-link>
+				<router-link tag="li" to="/donate/1">捐赠名单</router-link>
 				<router-link tag="li" to="/wiki">开发教程</router-link>
 				<router-link tag="li" to="/qrcode">管理后台</router-link>
 			</ul>

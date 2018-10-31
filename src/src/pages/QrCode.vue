@@ -58,7 +58,8 @@ export default class QrCode extends Vue {
 		title: '支付宝',
 		name: 'alipay',
 		type: 'qr',
-		qrname: 'alipay_url'
+		qrname: 'alipay_url',
+		disabled: true,
 	}, {
 		title: '微信',
 		name: 'wechat',

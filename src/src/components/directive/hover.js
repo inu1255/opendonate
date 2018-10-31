@@ -1,18 +1,17 @@
 import Vue from 'vue';
-import utils from '../../common/utils';
 
-Vue.directive('select', {
+Vue.directive('hover', {
     bind(el, binding, vnode, oldVnode) {
-        function fn() {
-            utils.selectNode(el);
+        function enter() {
+			vnode.context[binding.expression] = true;
 		}
 		function leave() {
-			window.getSelection().removeAllRanges();
+			vnode.context[binding.expression] = false;
 		}
-        el.addEventListener('mouseenter', fn);
+        el.addEventListener('mouseenter', enter);
         el.addEventListener('mouseleave', leave);
         vnode.context.$once('hook:beforeDestroy', function() {
-            el.removeEventListener('mouseenter', fn);
+            el.removeEventListener('mouseenter', enter);
             el.removeEventListener('mouseleave', leave);
         });
     },

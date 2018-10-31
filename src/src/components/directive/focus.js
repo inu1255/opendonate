@@ -15,6 +15,8 @@ Vue.directive('focus', {
                 }
             }
         }
-        if (input) input.focus();
+        if (input) setTimeout(function() {
+			input.focus();
+		}, 100);;
     }
 });

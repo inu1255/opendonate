@@ -59,7 +59,7 @@ exports.list = async function(req, res) {
     let body = req.body;
     let [app] = await db.execSQL(`select id,title,create_id from app where id=?`, [body.app_id]);
     if (!app) return 404;
-    let [user] = await db.execSQL(`select name,avatar,profile from user where id=?`, [app.create_id]);
+    let [user] = await db.execSQL(`select email,name,avatar,profile from user where id=?`, [app.create_id]);
     let [list, [{ total }]] = await db.execSQL([
         db.Raw(`select sql_calc_found_rows * from donate where app_id=? order by ${body.sort} ${body.order} limit ?,15`, [body.app_id, body.offset]),
         `select found_rows() as total`

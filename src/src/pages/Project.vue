@@ -11,9 +11,9 @@
 			<mu-data-table :loading="loading" :columns="columns" :data="table_data" :sort.sync="sort">
 				<template slot-scope="{row, $index}">
 					<td>{{row.title}}</td>
-					<td>{{row.url}}</td>
-					<td>{{row.cer}}</td>
-					<td>{{row.back}}</td>
+					<td v-select>{{row.url}}</td>
+					<td><i-hide :value="row.cer" :open.sync="row.open"></i-hide></td>
+					<td><a :href="row.back" target="_blank">{{row.back}}</a></td>
 					<td>
 						<mu-menu cover placement="bottom-end">
 							<mu-icon value="more_vert"></mu-icon>
@@ -91,9 +91,6 @@ export default class Project extends Vue {
 		}
 		return list
 	}
-	format(item) {
-
-	}
 	async payQr(row) {
 		window.open(`/donate/${row.id}?page=1&n=1`)
 	}
@@ -119,6 +116,9 @@ export default class Project extends Vue {
 			await this.$get('orders/app_del', { id: row.id }, { loading: true })
 			this.list.splice(i, 1)
 		}
+	}
+	format(item) {
+		item.open = false
 	}
 	@utils.loading()
 	async refresh() {
