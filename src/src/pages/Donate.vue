@@ -1,6 +1,6 @@
 <template>
 	<div class="pages-donate">
-		<i-header v-if="$route.params.id==3" bg="#333">
+		<i-header bg="#333">
 			<mu-button slot="right" icon>
 				<i class="fa fa-github"></i>
 			</mu-button>
@@ -9,7 +9,6 @@
 			</mu-button>
 			<ul>
 				<router-link tag="li" to="/">首页</router-link>
-				<li @click="body={}">支付体验</li>
 				<li @click="refresh">捐赠名单</li>
 				<router-link tag="li" to="/wiki">开发教程</router-link>
 				<router-link tag="li" to="/qrcode">管理后台</router-link>
@@ -18,7 +17,9 @@
 		<mu-container>
 			<h3 style="font-weight:400;">项目名称: <b>{{app.title}}</b> 作者: <b>{{user.name}}</b></h3>
 			<pre v-if="user.profile">介绍：{{user.profile}}</pre>
-			<br>
+			<div class="tar p5">
+				<mu-button @click="body={}" color="primary">捐赠</mu-button>
+			</div>
 			<mu-paper :z-depth="1">
 				<mu-data-table stripe :loading="loading" :columns="columns" :data="list" :sort.sync="sort">
 					<template slot-scope="{row}">
@@ -47,7 +48,7 @@ import utils from '../common/utils';
 
 @Component()
 export default class Donate extends Vue {
-	query = utils.query({ page: 1, n: 0 }, true)
+	query = utils.query({ page: 1 }, true)
 	columns = [{
 		title: '捐赠者邮箱',
 		name: 'email',
@@ -87,15 +88,6 @@ export default class Donate extends Vue {
 	}
 	loading = false
 	body = false
-	@Watch('$route')
-	onShow() {
-		setTimeout(() => {
-			if (this.$route.query.n) this.body = {}
-		}, 350);
-	}
-	created() {
-		if (this.query.n) this.body = {}
-	}
 	onDonate(body) {
 		if (body.price < 0.01) return this.$toast.success('感谢您的支持')
 		location.href = `${location.protocol}//${location.host}/pay?app=${encodeURIComponent(this.app.title)}&u=${this.app.create_id}&price=${Math.floor(body.price * 100)}&ext=${encodeURIComponent(JSON.stringify({ email: body.email, remark: body.remark }))}`

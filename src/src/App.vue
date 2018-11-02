@@ -4,17 +4,15 @@
 		<div v-if="!solo" class="main" :class="{md:md}" v-resize="resize">
 			<app-nav :md="md"></app-nav>
 			<mu-container>
-				<mu-fade-transition>
-						<router-view />
-				</mu-fade-transition>
-			</mu-container>
-		</div>
-		<div v-else class="main solo" :class="{md:md}" v-resize="resize">
-			<mu-fade-transition>
 				<keep-alive>
 					<router-view />
 				</keep-alive>
-			</mu-fade-transition>
+			</mu-container>
+		</div>
+		<div v-else class="main solo" :class="{md:md}" v-resize="resize">
+			<keep-alive>
+				<router-view />
+			</keep-alive>
 		</div>
 		<app-login :open="login"></app-login>
 		<mu-dialog :title="p?p.name:''" width="360" :open="Boolean(p)">
@@ -96,18 +94,6 @@ export default {
     margin-top: 65px;
   }
 }
-.main {
-  > .container,
-  &.solo {
-    > * {
-      transition: all 0.35s;
-    }
-    > .mu-fade-transition-leave-active.mu-fade-transition-leave-to {
-      position: absolute;
-    }
-  }
-}
-
 .mu-drawer.is-open ~ .main.md {
   padding-left: 256px;
   > .app-title {
