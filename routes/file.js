@@ -64,8 +64,8 @@ exports.image = async function(req, res) {
     let sina = new SinaBed(body.username || config.sina.username, body.passwd || config.sina.password);
     buffer = buffer || await cofs.readFile(body.f.path);
     cofs.rm(body.f.path);
-    // let md5 = await sina.upload(buffer.toString('base64'));
-    let url = 'https://ws1.sinaimg.cn/mw690/bfdf4e9fgy1fwlq41mby8j20i40i0mzk'; //`https://ws1.sinaimg.cn/mw690/${md5}`;
+    let md5 = await sina.upload(buffer.toString('base64'));
+    let url = `https://ws1.sinaimg.cn/mw690/${md5}`;
     return { url, rect, data };
 };
 
