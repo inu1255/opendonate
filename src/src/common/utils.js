@@ -1,8 +1,18 @@
 import router from '../router';
 import lib from './lib';
+import { hex_md5 } from './md5';
+const ts = [
+    [86400e3 * 365, "年"],
+    [86400e3 * 30, "月"],
+    [86400e3, "天"],
+    [3600e3, "小时"],
+    [60e3, "分钟"],
+    [1e3, "秒"],
+];
 
 let userAgent = window.navigator.userAgent.toLowerCase();
 let utils = {
+    md5: hex_md5,
     env: {
         ua: userAgent,
         wx: /micromessenger/.test(userAgent),
@@ -57,7 +67,6 @@ let utils = {
      */
     query(params, auto) {
         let data = {};
-        let flag = false;
         let timeout;
         let query = Object.assign({}, router.currentRoute.query);
         for (let k in params) {
@@ -89,13 +98,59 @@ let utils = {
             let tmp = query[k];
             if (tmp == null) {
                 query[k] = encodeURIComponent(typeof value === "string" ? value : JSON.stringify(value));
-                flag = true;
             } else {
                 query[k] = tmp;
             }
         }
-        if (auto && flag) router.replace({ query });
         return data;
+    },
+    fromNow(v, digits, def) {
+        digits = digits || 0;
+        if (!v) return def || '未设置';
+        if (typeof v === "number" && v < 1e12) {
+            v *= 1e3;
+        }
+        v = new Date(v) - new Date();
+        let s = utils.diff(Math.abs(v), digits, v > 0 ? '后' : '前');
+        if (s) return s;
+        return '现在';
+    },
+    diff(v, digits, suffix) {
+        suffix = suffix || '';
+        let s = '';
+        for (let unit of ts) {
+            let diff = v / unit[0];
+            let tmp = Math.floor(diff);
+            if (tmp) {
+                if (digits) {
+                    let n = Math.pow(10, digits);
+                    s = Math.floor(v / unit[0] * n) / n;
+                } else {
+                    s = tmp;
+                }
+                s += unit[1];
+                break;
+            }
+        }
+        if (s) return s + suffix;
+    },
+    /**
+     * @param {number} t 
+     * @param {string} format 
+     */
+    format(t, format) {
+        if (typeof t === "number" && t < 1e12) {
+            t *= 1e3;
+        }
+        t = new Date(t);
+        let Y = (t.getFullYear() + 1e4).toString().slice(1);
+        return format.replace(/YYYY/g, Y)
+            .replace(/YY/g, Y.slice(2))
+            .replace(/MM/g, (t.getMonth() + 101).toString().slice(1))
+            .replace(/DD/g, (t.getDate() + 100).toString().slice(1))
+            .replace(/hh/g, (t.getHours() + 100).toString().slice(1))
+            .replace(/mm/g, (t.getMinutes() + 100).toString().slice(1))
+            .replace(/ss/g, (t.getSeconds() + 100).toString().slice(1));
     },
     /**
      * node 是否是 parent 的后代
@@ -193,7 +248,7 @@ let utils = {
      * @param {string} val 
      */
     isEmail(val) {
-        return /^[\w-]+@[\w-]+(.[\w-]+)+$/.test(val);
+        return /^[^@]+@[^\.]+\.\S+$/.test(val);
     },
     /**
      * 是否手机
@@ -268,6 +323,31 @@ let utils = {
         let range = document.createRange();
         range.selectNode(el);
         selection.addRange(range);
+    },
+    copy(str) {
+        try {
+            var input = document.createElement('input');
+            input.style.position = 'fixed';
+            input.style.top = '-100px';
+            input.value = str;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+        } catch (error) {
+            return false;
+        }
+        return true;
+    },
+    randomString(length, chars) {
+        length = length || 32;
+        chars = chars || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        return Array.from({ length }).map(() => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+    },
+    createURL(data) {
+        var URL = window.URL || window.webkitURL || window;
+        data = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+        return URL.createObjectURL(new Blob([data]));
     }
 };
 

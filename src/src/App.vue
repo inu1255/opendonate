@@ -32,20 +32,7 @@ export default {
 	data() {
 		return {
 			open: false,
-			md: true,
-			routes: [{
-				path: '/poses',
-				name: '人数',
-				icon: "camera_alt",
-			}, {
-				path: '/editor',
-				name: '编辑',
-				icon: "border_color",
-			}, {
-				path: '/projects',
-				name: '项目',
-				icon: "apps",
-			},]
+			md: true
 		}
 	},
 	computed: {

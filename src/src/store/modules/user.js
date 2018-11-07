@@ -13,6 +13,15 @@ store.addMutations({
         if (data) {
             utils.cacheUsers([data]);
         }
+    },
+    'cost'(state, data) {
+        state.user.mCost += data;
+    }
+});
+
+store.addGetters({
+    isAdmin(state) {
+        return state.user && state.user.role == 'admin';
     }
 });
 
@@ -36,6 +45,9 @@ store.addActions({
         } catch (error) { console.log(error); }
         store.commit("user", null);
     },
+    cost({ commit, state }, data) {
+        store.commit('cost', data);
+    }
 });
 
 setTimeout(() => {

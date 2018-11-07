@@ -9,6 +9,11 @@ const fs = require('fs');
 const readline = require('readline');
 
 class SinaBed {
+    /**
+     * 
+     * @param {string} name 
+     * @param {string} passwd 
+     */
     constructor(name, passwd) {
         this.username = name;
         this.password = passwd;
@@ -60,15 +65,19 @@ class SinaBed {
             'returntype': 'META'
         };
         if (showpin) {
-            await this.axios.get(`http://login.sina.com.cn/cgi/pin.php?r=${Math.floor(Math.random() * 1e8)}&s=0&p=${pcid}`, { responseType: 'stream' }).then(function(res) {
-                res.data.pipe(fs.createWriteStream('public/pinCode.png'));
+            await this.axios.get(`http://login.sina.com.cn/cgi/pin.php?r=${Math.floor(Math.random() * 1e8)}&s=0&p=${pcid}`, { responseType: 'stream' }).then(res => {
+                res.data.pipe(fs.createWriteStream(`public/${this.username}.png`));
             });
-            let pinCode = await this.inputPinCode();
-            if (pinCode) {
+            SinaBed[this.username] = pinCode => {
                 data['door'] = pinCode;
                 data['pcid'] = pcid;
-            }
+                return this.acquireCookie(data);
+            };
+            throw 'pincode';
         }
+        await this.acquireCookie(data);
+    }
+    async acquireCookie(data) {
         let url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)';
         let loginResp = await this.axios.post(url, querystring.stringify(data), {
             jar: this.cookieJar,
@@ -111,7 +120,8 @@ class SinaBed {
             });
             let { data } = JSON.parse(upImgResp.data.replace(/([\s\S]*)<\/script>/g, ''));
             if (data.count == -11) {
-                throw '只能上传图片';
+				errTime = 5;
+                throw '格式不支持';
             }
             if (data.count == -1) {
                 throw '新浪账号过期';

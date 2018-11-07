@@ -203,7 +203,7 @@ exports.add = async function(req, res) {
         app_id: app.id,
         type: body.type,
         ext: body.ext,
-        ip: req.ip,
+        ip: req.realip,
         ua: req.ua,
         create_at: +new Date,
         user_id: body.user_id,

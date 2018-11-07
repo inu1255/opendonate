@@ -31,6 +31,7 @@ const config = {
     },
     upload: 'public/tmp', // 文件上传目录
     secret: 'j3isue', // 加密字串
+    perpay: 'xxxeee',
     code_expire: 600e3, // 验证码过期时间，10分钟
     xiaomi: { // 小米推送设置
         production: true,

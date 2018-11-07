@@ -337,7 +337,8 @@ function routeApi(filename, handler) {
     if (!handler) {
         logger.info("define", data.method.toUpperCase(), uri, "---> Mock数据");
         handler = function(req, res) {
-            console.log(data.ret);
+			console.log(data.ret);
+			res._end = true;
             res.json(data.ret || { no: 200 });
         };
     } else {

@@ -166,8 +166,6 @@ class Sql extends Raw {
         this.$$pms;
         this._where = new WhereBuilder();
         this._table = "";
-        this._order = "";
-        this._limit = "";
     }
     /**
      * @returns {Sql}
@@ -190,7 +188,7 @@ class Sql extends Raw {
         return this;
     }
     toString() {
-        return `${this._sql}${this._table}${this._where.toWhere()}${this._order}${this._limit}`;
+        return `${this._sql}${this._table}${this._where.toWhere()}`;
     }
     args() {
         return this._args.concat(this._where.args());
@@ -251,29 +249,6 @@ class Sql extends Raw {
         this._where.or(key, op, value);
         return this;
     }
-    orderBy(key) {
-        this._order = key ? ` order by ${key}` : "";
-        return this;
-    }
-    limit(offset, size) {
-        offset = +offset;
-        size = +size;
-        if (size)
-            this._limit = ` limit ${offset},${size}`;
-        else if (offset)
-            this._limit = ` limit ${offset}`;
-        else
-            this._limit = " limit 1";
-        return this;
-    }
-    first() {
-        if (!this._limit) this._limit = " limit 1";
-        this._first = true;
-        this.then(function(rows) {
-            return rows instanceof Array ? rows[0] : rows;
-        });
-        return this;
-    }
     exclude(keys) {
         keys = utils.arr(keys);
         if (keys.length) {
@@ -327,25 +302,62 @@ class InsertSql extends Sql {
 class SelectSql extends Sql {
     constructor(table, keys) {
         super();
-        keys = utils.arr(keys, ["*"]);
-        this._sql = `select ${keys.join(",")} from `;
+        this._keys = utils.arr(keys, ["*"]);
+        this._order = "";
+        this._limit = "";
+        this._page = false;
         this.from(table);
     }
     /**
      * @param {String} [key] 
      */
     count(key) {
-        this._sql = `select count(${key||"*"}) as count from `;
+        this._keys = [`count(${key||"*"})`];
         this._first = true;
         return this;
     }
-    /**
-     * @param {Array} keys 
-     */
-    select(keys) {
-        keys = utils.arr(keys, ["*"]);
-        this._sql = `select ${keys.join(",")} from `;
+    orderBy(key) {
+        this._order = key ? ` order by ${key}` : "";
         return this;
+    }
+    limit(offset, size) {
+        offset = +offset;
+        size = +size;
+        if (size)
+            this._limit = ` limit ${offset},${size}`;
+        else if (offset)
+            this._limit = ` limit ${offset}`;
+        else
+            this._limit = " limit 1";
+        return this;
+    }
+    first() {
+        if (!this._limit) this._limit = " limit 1";
+        this._first = true;
+        this.then(function(rows) {
+            return rows instanceof Array ? rows[0] : rows;
+        });
+        return this;
+    }
+    page() {
+        this._page = true;
+        return this;
+    }
+    toString() {
+        return `select ${this._page?'sql_calc_found_rows ':''}${this._keys.join(",")} from ${this._table}${this._where.toWhere()}${this._order}${this._limit}`;
+    }
+    pms() {
+        if (this._page) {
+            return this._e.execSQL([this, 'select found_rows() as total'], { transaction: false }).then(rows => {
+                return { list: rows[0], total: rows[1][0].total };
+            });
+        }
+        return this._e.SingleSQL(this).then(rows => {
+            if (this._first && rows instanceof Array) {
+                return rows[0];
+            }
+            return rows;
+        });
     }
 }
 
@@ -407,7 +419,6 @@ class InsertOrUpdate extends Sql {
         else {
             this._keys = [];
             for (let k in data) {
-                let v = data[k];
                 this._keys = keys.push(k);
             }
         }
@@ -491,14 +502,16 @@ class Engine {
 
     /**
      * @param {String|Sql|Array<String|Sql>} sqls 
-     * @param {Array} args 
+     * @param {Array} [args] 
+	 * @param {Object} [ctx]
+	 * @param {boolean} ctx.ignore
+	 * @param {boolean} ctx.transaction
      * @returns {Promise<Array>}
      */
-    execSQL(sqls) {
-        let argu = arguments;
+    execSQL(sqls, args, ctx) {
         return new Promise((resolve, reject) => {
             this.getConn().then(conn => {
-                conn.execSQL.apply(conn, argu).then(rows => {
+                conn.execSQL(sqls, args, ctx).then(rows => {
                     this.release(conn);
                     resolve(rows);
                 }, err => {
@@ -593,7 +606,11 @@ class Engine {
                 return new WhereBuilder(`${key} ${op} (?)`, [value]);
             return new WhereBuilder(`${key} ${op} ?`, [utils.val(value)]);
         } else if (op != undefined) {
-            if (op instanceof Raw) return new WhereBuilder(`${key}=(${op})`);
+            if (op instanceof Raw) {
+                let where = new WhereBuilder(`${key}=(${op})`);
+                where._args = op.args();
+                return where;
+            }
             if (op instanceof Array) return new WhereBuilder(key, op);
             op = utils.val(op);
             if (op == null) return new WhereBuilder(`${key} is null`);

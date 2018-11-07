@@ -20,6 +20,7 @@
     "smooth-scroll": "^14.2.1",
     "vue": "^2.5.2",
     "vue-property-decorator": "^7.2.0",
+    "vue-qr": "^1.5.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
     "vuex-class": "^0.3.1"

@@ -14,22 +14,19 @@ routes.push({
     name: "收款码",
     icon: "qrcode",
     component: QrCode,
-    menu: true,
-    meta: { login: true }
+    meta: { menu: true, login: true }
 },{
     path: '/project',
     name: '项目',
     icon: "api",
     component: Project,
-    menu: true,
-    meta: { login: true }
+    meta: { menu: true, login: true }
 }, {
     path: '/orders',
     name: '订单',
     icon: "order",
     component: Orders,
-    menu: true,
-    meta: { login: true }
+    meta: { menu: true, login: true }
 }, {
     path: '/user_edit',
     name: '修改个人信息',

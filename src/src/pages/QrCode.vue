@@ -5,7 +5,6 @@
 			<mu-button @click="body={}" color="secondary">添加</mu-button>
 			<mu-button @click="refresh" color="primary">刷新</mu-button>
 		</div>
-		<b>支付接口: </b><span v-select>http://perpay.inu1255.cn/pay?u={{user.id}}&price=(金额,单位:分)&app=(项目名称)&type=(0:支付宝 1:微信 不传:用户选择)</span>
 		<br>
 		<mu-paper :z-depth="1">
 			<mu-data-table :loading="loading" :columns="columns" :data="table_data" :sort.sync="sort">

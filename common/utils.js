@@ -83,6 +83,25 @@ exports.probe = function(port) {
 };
 
 /**
+ * @param {number} t 
+ * @param {string} format 
+ */
+exports.format = function(t, format) {
+    if (typeof t === "number" && t < 1e12) {
+        t *= 1e3;
+    }
+    t = new Date(t);
+    let Y = (t.getFullYear() + 1e4).toString().slice(1);
+    return format.replace(/YYYY/g, Y)
+        .replace(/YY/g, Y.slice(2))
+        .replace(/MM/g, (t.getMonth() + 101).toString().slice(1))
+        .replace(/DD/g, (t.getDate() + 100).toString().slice(1))
+        .replace(/hh/g, (t.getHours() + 100).toString().slice(1))
+        .replace(/mm/g, (t.getMinutes() + 100).toString().slice(1))
+        .replace(/ss/g, (t.getSeconds() + 100).toString().slice(1));
+};
+
+/**
  * @param {string} query
  * @param {string} def
  * @returns {Promise<string>}
@@ -301,6 +320,19 @@ exports.parseReqCookie = function(cookie) {
         }
     }
     return item;
+};
+
+/**
+ * @param {any[]} list
+ */
+exports.unique = function(list) {
+    let set = new Set();
+    for (let item of list) {
+        set.add(item);
+    }
+    list = [];
+    set.forEach(x => list.push(x));
+    return list;
 };
 
 /**

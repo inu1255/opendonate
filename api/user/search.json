@@ -1,0 +1,30 @@
+{
+    "name": "搜索用户",
+    "method": "get",
+    "params": {
+        "user_id": {
+            "lbl": "用户ID",
+            "type": "int"
+        },
+        "invite_id": {
+            "lbl": "邀请用户ID",
+            "type": "int"
+        },
+        "email": {
+            "lbl": "邮箱"
+        },
+        "account": {
+            "lbl": "账号"
+        },
+        "offset": {
+            "lbl": "偏移",
+            "type": "int",
+            "def": 0
+        }
+    },
+    "grant": "{U}",
+    "pretreat": "if({U}.role!='admin'){}.invite_id={U}.id",
+    "ret": {
+        "no": 200
+    }
+}

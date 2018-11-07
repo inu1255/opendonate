@@ -110,14 +110,17 @@ exports.register = async function(req, res) {
         if (!invitor) {
             return 409;
         }
-        invitor.money += 100;
-        data.money = 200;
+        invitor.money += 1000;
+		data.money = 1000;
+		data.mCost = 0;
+        data.invite_id = body.invite;
         let pack = await db.execSQL([
             db.update("verify", { rest: -1 }).where("title", title),
             db.update("user", invitor).where("id", body.invite),
             db.insert("user", data)
         ]);
         data.id = pack[2].insertId;
+        lib.sessUpdate(body.invite);
     } else {
         data.money = 100;
         let pack = await db.execSQL([
@@ -275,9 +278,42 @@ exports.edit = async function(req, res) {
         Object.assign(user, data);
 };
 
+/**
+ * @param {{session:{user:User}}} req
+ */
+exports.search = async function(req, res) {
+    // gparam "../api/user/search.json"
+    /**
+     * @typedef {object} search_body
+     * @property {number} [user_id] 用户ID
+     * @property {number} [invite_id] 邀请用户ID
+     * @property {string} [email] 邮箱
+     * @property {string} [account] 账号
+     * @property {number} [offset] 偏移
+     */
+    /** @type {search_body} */
+	let body = req.body;
+    let user = req.session.user;
+    let sql = db.select('user', 'id,name,email,account,avatar,create_at,invite_id,profile,role');
+    if (body.user_id) {
+        sql.where({ id: body.user_id });
+    }
+    if (body.email) {
+        sql.where({ email: body.email });
+    }
+    if (body.account) {
+        sql.where({ account: body.account });
+    }
+    if (body.invite_id) {
+        sql.where({ invite_id: body.invite_id });
+    }
+    let { list, total } = await sql.orderBy('id desc').limit(body.offset, 12).page();
+    return { list, total };
+};
+
 db.select('user').where('role', 'admin').then(rows => {
     if (!rows.length) {
         console.log(`添加初始用户`);
-        return db.insert('user', { account: 'inu1255', passwd: '199337', role: 'admin', create_at: +new Date });
+        return db.insert('user', { name: '管理员', avatar: 'https://cn.gravatar.com/avatar/ab898e14a3dd6b89debe79f7440a2be4?s=64&d=identicon&r=PG', account: 'inu1255', passwd: '199337', role: 'admin', create_at: +new Date });
     }
 });

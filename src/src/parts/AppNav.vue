@@ -1,41 +1,25 @@
 <template>
-	<mu-appbar class="app-title" color="primary">
+	<mu-appbar class="app-title"  color="blueGrey900">
 		<mu-button v-if="!md" @click="toggleDrawer" icon slot="left">
 			<mu-icon value="menu"></mu-icon>
 		</mu-button>
 		<router-link to="/" tag="span" class="btn">盆儿支付</router-link>
 		<mu-menu slot="right">
-			<mu-button flat>更多</mu-button>
-			<mu-list slot="content">
-				<mu-list-item @click="logout" button>
-					<mu-list-item-content>
-						<mu-list-item-title>注销</mu-list-item-title>
-					</mu-list-item-content>
-				</mu-list-item>
-			</mu-list>
+			<mu-button @click="logout" flat>注销</mu-button>
 		</mu-menu>
 	</mu-appbar>
 </template>
 <script>
-import { mapState, mapActions } from "vuex";
+import Vue from 'vue'
+import { Component, Prop, Watch } from 'vue-property-decorator';
+import { State, Action } from "vuex-class";
+import utils from '../common/utils';
 
-export default {
-	name: "AppNav",
-	props: ["md"],
-	data() {
-		return {
-
-		}
-	},
-	computed: {
-
-	},
-	methods: {
-		...mapActions(['toggleDrawer', 'logout']),
-	},
-	components: {
-
-	},
+@Component()
+export default class AppNav extends Vue {
+	@Prop() md
+	@Action('toggleDrawer') toggleDrawer
+	@Action('logout') logout
 }
 </script>
 <style lang="less">

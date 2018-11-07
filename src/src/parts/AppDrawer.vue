@@ -2,10 +2,11 @@
 	<mu-drawer :open="md||show" @update:open="toggleDrawer" :docked="md">
 		<!-- 个人信息 -->
 		<mu-card style="width: 100%; max-width: 375px; margin: 0 auto;">
-			<mu-card-header v-if="user" :title="user.name" :sub-title="user.money+' SB'">
-				<mu-avatar slot="avatar">
-					<router-link to="/user_edit">
-						<img :src="user.avatar" :alt="user.id">
+			<mu-card-header v-if="user" :title="user.name" :sub-title="user.money-user.mCost+' S币'">
+				<mu-avatar class="btn" color="teal" slot="avatar">
+					<router-link tag="span" to="/user_edit">
+						<img v-if="user.avatar" :src="user.avatar" :alt="user.id">
+						<span v-else>{{user.account.slice(0,1)}}</span>
 					</router-link>
 				</mu-avatar>
 			</mu-card-header>
@@ -23,30 +24,25 @@
 	</mu-drawer>
 </template>
 <script>
-import { mapState, mapActions } from "vuex";
+import Vue from 'vue'
+import { Component, Prop, Watch } from 'vue-property-decorator';
+import { State, Action, Getter } from "vuex-class";
+import utils from '../common/utils';
 import routes from '../router/routes.js';
 
-export default {
-	name: "AppDrawer",
-	props: ['md'],
-	data() {
-		return {
-			routes: routes.filter(x => x.menu).map(({ name, path, icon }) => ({ name, icon, path: path.split('/').slice(0, 2).join('/') })),
-		}
-	},
-	computed: {
-		...mapState({
-			loading: state => state.app.loading,
-			show: state => state.app.show,
-			user: state => state.user.user,
-		})
-	},
-	methods: {
-		...mapActions(['toggleDrawer']),
-	},
-	components: {
-
-	},
+@Component()
+export default class AppDrawer extends Vue {
+	@State(state => state.user.user) user
+	@State(state => state.app.loading) loading
+	@State(state => state.app.show) show
+	@Getter('isAdmin') isAdmin
+	@Prop() md
+	get routes() {
+		let list = routes.filter(x => x.meta.menu)
+		if (!this.isAdmin) list = list.filter(x => !x.meta.adm)
+		return list.map(({ name, path, icon }) => ({ name, icon, path: path.split('/').slice(0, 2).join('/') }))
+	}
+	@Action('toggleDrawer') toggleDrawer
 }
 </script>
 <style lang="less">

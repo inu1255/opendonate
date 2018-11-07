@@ -400,6 +400,9 @@ class Define {
     json(name) {
         return this.field(name, `json`);
     }
+    float(name) {
+        return this.field(name, `float`);
+    }
     int(name) {
         return this.field(name, `int`);
     }

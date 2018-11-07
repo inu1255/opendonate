@@ -1,3 +1,4 @@
+const config = require("../config");
 const utils = require("../utils");
 const Engine = require("./engine");
 const mysql = require("mysql");
@@ -13,7 +14,7 @@ function extendsConn(coMysql, logger) {
                     if (!ignore) logger.debug(sql, args || "", err);
                     reject(err);
                 } else {
-                    if (!ignore) logger.debug(sql, args || "");
+                    if (!ignore && config.dev) logger.debug(sql, args || "");
                     resolve(rows);
                 }
             });
@@ -28,17 +29,17 @@ function extendsConn(coMysql, logger) {
             return this.queryAsync(sql.sql, sql.args || args, ignore);
         return this.queryAsync(sql.toString(), args, ignore);
     };
-    coMysql.execSQL = function(sqls) {
+    coMysql.execSQL = function(sqls, args, ctx) {
         let db = this;
-        let autoTrans = sqls instanceof Array && sqls.length > 1;
-        let ignore = false;
-        let args = [];
-        for (let x of arguments) {
-            if (x === sqls || null == x)
-                continue;
-            if (x instanceof Array) args = x;
-            else ignore = Boolean(x);
+        if (args instanceof Array) {
+            ctx = ctx || {};
+			args = args || [];
+		} else {
+            ctx = args || {};
+            args = [];
         }
+        let autoTrans = ctx.transaction == null ? sqls instanceof Array && sqls.length > 1 : ctx.transaction;
+        let ignore = ctx.ignore;
         let pms = Promise.resolve();
         if (autoTrans)
             pms = pms.then(() => db.beginTransactionAsync());

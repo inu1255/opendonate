@@ -5,26 +5,6 @@ const db = require("../common/db");
 const path = require('path');
 const utils = require('../common/utils');
 
-exports.list = async function(req, res) {
-    let user = req.session.user;
-    let list = await db.execSQL(`select id,name,md5 from file where create_id=?`, [user.id]);
-    list.forEach((item, i) => {
-        item.url = `http://ww1.sinaimg.cn/mw690/${item.md5}`;
-        delete item.md5;
-    });
-    return list;
-};
-
-exports.readdir = function(req, res) {
-    const body = req.body;
-    return cofs.readDir(body.dir);
-};
-
-exports.readfile = function(req, res) {
-    const body = req.body;
-    return cofs.readfile(body.file);
-};
-
 /**
  * @param {{session:{user:User}}} req
  */
@@ -33,7 +13,7 @@ exports.image = async function(req, res) {
     /**
      * @typedef {object} image_body
      * @property {string} f 图片
-     * @property {string} [qr] 是否二维码
+     * @property {number} [qr] 是否二维码
      * @property {string} [username] 新浪账号
      * @property {string} [passwd] 新浪密码
      */
@@ -41,9 +21,16 @@ exports.image = async function(req, res) {
     let body = req.body;
     let user = req.session.user;
     if (!body.f.type.startsWith('image/')) return 405;
+    if (SinaBed[body.username || config.sina.username]) return 407;
     let rect, data, buffer;
     if (body.qr) {
-        let img = await utils.qr_decode(body.f.path);
+        let img = {};
+        try {
+            img = await utils.qr_decode(body.f.path);
+        } catch (err) {
+            if (!/unsupported image format/.test(err))
+                console.log(err);
+        }
         if (img.qr) {
             data = img.qr.data;
             let location = img.qr.location;
@@ -64,26 +51,84 @@ exports.image = async function(req, res) {
     let sina = new SinaBed(body.username || config.sina.username, body.passwd || config.sina.password);
     buffer = buffer || await cofs.readFile(body.f.path);
     cofs.rm(body.f.path);
-    let md5 = await sina.upload(buffer.toString('base64'));
+    let md5;
+    try {
+        md5 = await sina.upload(buffer.toString('base64'));
+    } catch (err) {
+        if (err == "pincode") return 407;
+        console.error(err);
+        throw err;
+    }
     let url = `https://ws1.sinaimg.cn/mw690/${md5}`;
+    let name;
+    if (body.f.name.length > 64) {
+        let ext = path.extname(body.f.name);
+        name = path.basename(body.f.name).slice(0, 32 - ext.length) + ext;
+    } else {
+        name = body.f.name;
+    }
+    let row = {
+        ip: req.realip,
+        ua: req.ua,
+        uri: md5,
+        name,
+        create_at: +new Date(),
+    };
+    if (data) row.data = data;
+    if (body.token) row.token = body.token;
+    await db.insert('file', row);
     return { url, rect, data };
 };
 
 /**
  * @param {{session:{user:User}}} req
  */
-exports.upload = async function(req, res) {
-    // gparam "../api/file/upload.json"
+exports.list = async function(req, res) {
+    // gparam "../api/file/list.json"
     /**
-     * @typedef {object} upload_body
-     * @property {string} [f] 文件
+     * @typedef {object} list_body
+     * @property {string} token 身份信息
+     * @property {number} [create_min] 多久之后
+     * @property {number} [create_max] 多久之前
+     * @property {number} [offset] 偏移时间
      */
-    /** @type {upload_body} */
+    /** @type {list_body} */
+    let body = req.body;
+    let sql = db.select('photo', `name,create_at,data,concat('https://ws1.sinaimg.cn/mw690/',uri) as url`); //.where({token: this.token})
+    if (body.create_max) {
+        sql.where('create_at', '<=', body.create_max);
+    }
+    if (body.create_min) {
+        sql.where('create_at', '>=', body.create_min);
+    }
+    return await sql.limit(body.offset, 50);
+};
+
+/**
+ * @param {{session:{user:User}}} req
+ */
+exports.code = async function(req, res) {
+    // gparam "../api/file/code.json"
+    /**
+     * @typedef {object} code_body
+     * @property {string} [username] 用户名
+     * @property {string} code 验证码
+     */
+    /** @type {code_body} */
     let body = req.body;
     let user = req.session.user;
-    let filename = body.f.hash + path.extname(body.f.path);
-    let dir = `upload/${user?user.id:0}/`;
-    await cofs.mkdirs(dir);
-    await cofs.mv(body.f.path, dir + filename);
-    return filename;
+    let name = body.username || config.sina.username;
+    if (body.code) {
+        if (SinaBed[name]) {
+            await SinaBed[name](body.code);
+            SinaBed[name] = null;
+        }
+    } else {
+        let filename = `public/${name}.png`;
+        let stat = await cofs.stat(filename);
+        utils.send304(req, res, stat.mtime.getTime(), function() {
+            res._end = true;
+            cofs.createReadStream(filename).pipe(res);
+        });
+    }
 };

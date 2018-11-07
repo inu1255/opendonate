@@ -19,16 +19,18 @@ request.interceptors.request.use(function(conf) {
     // 进度条
     store.commit("app.r", store.state.app.r + 1);
     if (conf.data instanceof FormData) {
-        let v;
-        conf.data.forEach(x => {
-            if (x instanceof File) v = x;
-        });
-        if (v) {
-            store.commit("app.p", { percent: 0, name: v.name });
-            conf.onUploadProgress = conf.onUploadProgress || function(e) {
-                var complete = (e.loaded / e.total * 100 | 0);
-                store.commit("app.p", { percent: complete, name: v.name });
-            };
+        if (!conf.onUploadProgress) {
+            let v;
+            conf.data.forEach(x => {
+                if (x instanceof File) v = x;
+            });
+            if (v) {
+                store.commit("app.p", { percent: 0, name: v.name });
+                conf.onUploadProgress = function(e) {
+                    var complete = (e.loaded / e.total * 100 | 0);
+                    store.commit("app.p", { percent: complete, name: v.name });
+                };
+            }
         }
     } else {
         conf.data = utils.clearNull(conf.data);
