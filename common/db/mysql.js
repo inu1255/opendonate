@@ -1,4 +1,3 @@
-const config = require("../config");
 const utils = require("../utils");
 const Engine = require("./engine");
 const mysql = require("mysql");
@@ -14,7 +13,7 @@ function extendsConn(coMysql, logger) {
                     if (!ignore) logger.debug(sql, args || "", err);
                     reject(err);
                 } else {
-                    if (!ignore && config.dev) logger.debug(sql, args || "");
+                    if (!ignore) logger.debug(sql, args || "");
                     resolve(rows);
                 }
             });
