@@ -1,0 +1,46 @@
+{
+	"name": "添加/修改qrcode",
+	"method": "post",
+	"params": {
+		"id": {
+			"lbl": "id",
+			"type": "int"
+		},
+		"price": {
+			"lbl": "金额",
+			"rem": "0:手输 >0:固定金额",
+			"type": "int",
+			"need": "id"
+		},
+		"alipay": {
+			"lbl": "支付宝",
+			"rem": "二维码链接",
+			"len": [0, 256]
+		},
+		"alipay_url": {
+			"lbl": "支付宝",
+			"rem": "支付链接",
+			"len": [0, 128]
+		},
+		"wechat": {
+			"lbl": "微信",
+			"rem": "二维码链接",
+			"len": [0, 256]
+		}
+	},
+	"grant": "{U}",
+	"error": {
+		"404": "目标不存在或无权限"
+	},
+	"ret": {
+		"no": 200,
+		"data": {
+			"id": 67991176,
+			"create_id": 38222104,
+			"price": -4145658,
+			"alipay": "iBDDDkHbhw7Hjr2CyPEFDW5WC3JEpExD4P33F5MJQjp5d7rYPhAFi5GYbRRbDiBcXkkaYhTQ626BMkQ5HYC2iJ2SWnQhrhrrpQxdid3Bd5XKER4rMFWBsQReBJAjCzy5kMN3TzZhbRDXhe6SCr6ZzXD57cFHARwNkBXxEfK3H36frTWHHEeEwJHsWpPPWKJjFfz8QzCbFmZpZKSRAJ86mGbx",
+			"alipay_url": "yE7S3AFbBpD3CYmGjs5BrkSW2Wrw6csz22z3DfcpP8dcRYjpe3XcmTfs5Mt2HdSy4Fmeh833crbfaXZJ8wRbMc538ZD3Pe72WaYBFZAEhMr6KiTX8rM3zc2",
+			"wechat": "6ZtsWTPAPnQQeYz2Secfcbnwxsd5Az6GHFW7b4aA8A3JASjGZb4CEDJFmkXeDtbY8yskXrik3xTW2t5WzsjppxKdSxmx4dGsFsGeymEx2tXRpTbKAmfiFwDhjF3JRh2C5QzNaiBSeemxic4NWj7epbp8AHXBnRTjRQB7nkBJBQHaNFPf8Yzy7d72TwJ77GkTDQyAhFn4KGtHSTKR82AKYBD4kwETSs"
+		}
+	}
+}

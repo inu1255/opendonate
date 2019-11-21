@@ -1,0 +1,39 @@
+{
+	"name": "创建订单",
+	"method": "post",
+	"freq": 5000,
+	"params": {
+		"aid": {
+			"lbl": "项目ID",
+			"type": "int",
+			"need": true
+		},
+		"price": {
+			"lbl": "金额(分)",
+			"type": "int",
+			"need": true,
+			"range": [0]
+		},
+		"type": {
+			"lbl": "支付方式",
+			"type": "int",
+			"opts": ["支付宝", "微信"]
+		},
+		"ext": {
+			"lbl": "附加信息",
+			"len": [0, 2048]
+		},
+		"json": {
+			"lbl": "是否返回JSON",
+			"type": "int",
+			"opts": ["否", "是"]
+		}
+	},
+	"error": {
+		"404": "商品不存在或已下架",
+		"405": "该商品不支持此支付方式"
+	},
+	"ret": {
+		"no": 200
+	}
+}

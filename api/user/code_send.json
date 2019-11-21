@@ -3,7 +3,7 @@
     "method": "get",
     "params": {
 		"title": {
-			"lbl": "手机/邮箱",
+            "lbl": "手机号或邮箱",
 			"reg": "^([^@]+@[^\\.]+\\.\\S+|1\\d{10})$",
 			"need": true
 		},
@@ -12,9 +12,8 @@
             "reg": "\\w{4,8}"
         }
 	},
-	"pretreat":"if(/@/.test({}.title)){}.email=true;console.log({});",
 	"check": [
-		{"R": "{}.code || /@/.test({}.title)", "M": "发送手机验证码必须提交图片验证码"}
+		// {"R": "{}.code || /@/.test({}.title)", "M": "发送手机验证码必须提交图片验证码"}
 	],
     "error": {
         "404": "图片验证码过期",

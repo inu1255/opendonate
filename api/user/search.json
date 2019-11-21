@@ -1,30 +1,45 @@
 {
-    "name": "搜索用户",
-    "method": "get",
-    "params": {
-        "user_id": {
-            "lbl": "用户ID",
-            "type": "int"
-        },
-        "invite_id": {
-            "lbl": "邀请用户ID",
-            "type": "int"
-        },
-        "email": {
-            "lbl": "邮箱"
-        },
-        "account": {
-            "lbl": "账号"
-        },
-        "offset": {
-            "lbl": "偏移",
-            "type": "int",
-            "def": 0
-        }
-    },
-    "grant": "{U}",
-    "pretreat": "if({U}.role!='admin'){}.invite_id={U}.id",
-    "ret": {
-        "no": 200
-    }
+	"name": "搜索用户",
+	"method": "get",
+	"params": {
+		"user_id": {
+			"lbl": "用户ID",
+			"type": "int"
+		},
+		"invite_id": {
+			"lbl": "邀请用户ID",
+			"type": "int"
+		},
+		"email": {
+			"lbl": "邮箱"
+		},
+		"account": {
+			"lbl": "账号"
+		},
+		"page": {
+			"lbl": "页码",
+			"type": "int",
+			"def": 0
+		},
+		"pageSize": {
+			"lbl": "分页大小",
+			"type": "int",
+			"range": [5, 50],
+			"def": 10
+		},
+		"sortBy": {
+			"lbl": "排序方式",
+			"enum": ["money", "id", "create_at", "rmb", "rmbCost", "login_at", "get_coupon_at"]
+		},
+		"desc": {
+			"lbl": "降序",
+			"type": "int",
+			"opts": ["升序", "降序"]
+		}
+	},
+	"grant": "{U}",
+	"pretreat": "if({U}.lvl>1){}.invite_id={U}.id",
+	"ret": {
+		"no": 200
+	}
 }

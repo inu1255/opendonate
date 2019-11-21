@@ -56,13 +56,12 @@
 			"type": "int"
 		}
 	},
-	"pretreat":"if({U}.role!='admin'){{}.id={U}.id;delete {}.role;delete {}.account;delete {}.money;}", // 普通用户只能修改自己的信息, 管理员默认修改自己的信息
+	"pretreat":"if({U}.lvl>0){{}.id={U}.id;delete {}.role;delete {}.account;delete {}.money;}", // 普通用户只能修改自己的信息, 管理员默认修改自己的信息
 	"grant": "{U}", // 登录后才能使用
 	"check":[
 		{"R": "{}.id", "M": "必须传ID"},
-		{"R": "{U}.role=='admin' || !{}.email || {}.ecode", "M": "修改邮箱时必须传邮箱验证码"},
-		{"R": "{U}.role=='admin' || !{}.tel || {}.tcode", "M": "修改手机时必须传手机验证码"},
-		{"R": "{U}.role=='admin' || !{}.passwd || {}.passwd0 || {}.ecode || {}.tcode", "M": "修改密码时必须传旧密码或验证码"}
+		{"R": "{U}.lvl<1 || !{}.email || {}.ecode", "M": "修改邮箱时必须传邮箱验证码"},
+		{"R": "{U}.lvl<1 || !{}.passwd || {}.passwd0 || {}.ecode || {}.tcode", "M": "修改密码时必须传旧密码或验证码"}
 	],
     "error": {
 		"405": "原密码错误",

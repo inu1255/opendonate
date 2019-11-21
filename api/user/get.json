@@ -1,0 +1,13 @@
+{
+	"name": "获取用户信息",
+	"method": "get",
+	"params": {
+		"id": {
+			"lbl": "用户ID"
+		}
+	},
+	"grant": "{U}.lvl<2",
+	"ret": {
+		"no": 200
+	}
+}

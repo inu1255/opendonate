@@ -1,0 +1,18 @@
+{
+    "name": "删除orders",
+    "method": "get",
+    "params": {
+        "id": {
+            "lbl": "ordersid",
+            "type": "int",
+            "need": true
+        }
+    },
+    "grant": "{U}.lvl<1",
+    "ret": {
+        "no": 200,
+        "data": {
+            "n": 1
+        }
+    }
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<link rel="icon" href="<%= BASE_URL %>favicon.ico">
+	<title>盆儿支付</title>
+	<link rel="stylesheet" href="//at.alicdn.com/t/font_809265_cj41lguulmb.css">
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue-router/dist/vue-router.min.js"></script>
+	<!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> -->
+	<!-- <script src="https://unpkg.com/element-ui/lib/index.js"></script> -->
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+	<script src="https://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+	<script src='https://cdn.jsdelivr.net/npm/tesseract.js@1.0.19/dist/tesseract.min.js'></script>
+	<script src="/js/vue-color.min.js"></script>
+</head>
+<script>
+	window.Tesseract = Tesseract.create({
+		workerPath: location.origin + '/tessdata/worker.min.js',
+		langPath: location.origin + '/tessdata/',
+		corePath: location.origin + '/tessdata/index.js',
+	})
+</script>
+
+<body>
+	<noscript>
+		<strong>We're sorry but quan2go-web doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+	</noscript>
+	<div id="app"></div>
+	<!-- built files will be auto injected -->
+</body>
+
+</html>

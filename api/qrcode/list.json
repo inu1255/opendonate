@@ -1,0 +1,103 @@
+{
+    "name": "获取qrcode",
+    "method": "get",
+    "params": {
+        "id": {
+            "lbl": "id",
+            "type": "int"
+        },
+        "create_id": {
+            "lbl": "创建用户ID",
+            "type": "int"
+        },
+        "minPrice": {
+            "lbl": "金额下限",
+            "rem": "0:手输 >0:固定金额",
+            "type": "int"
+        },
+        "maxPrice": {
+            "lbl": "金额上限",
+            "rem": "0:手输 >0:固定金额",
+            "type": "int"
+        },
+        "alipay": {
+            "lbl": "支付宝",
+            "rem": "二维码链接",
+            "len": [
+                0,
+                256
+            ]
+        },
+        "alipay_url": {
+            "lbl": "支付宝",
+            "rem": "支付链接",
+            "len": [
+                0,
+                128
+            ]
+        },
+        "wechat": {
+            "lbl": "微信",
+            "rem": "二维码链接",
+            "len": [
+                0,
+                256
+            ]
+        },
+        "page": {
+            "lbl": "页码",
+            "type": "int",
+            "def": 0
+        },
+        "pageSize": {
+            "lbl": "分页大小",
+            "type": "int",
+            "range": [
+                5,
+                50
+            ],
+            "def": 10
+        },
+        "sortBy": {
+            "lbl": "排序方式",
+            "enum": [
+                "",
+                "id"
+            ]
+        },
+        "desc": {
+            "lbl": "降序",
+            "type": "int",
+            "opts": [
+                "升序",
+                "降序"
+            ]
+        }
+    },
+    "grant": "{U}",
+    "pretreat": "if({U}.lvl<1){}.create_id={U}.id",
+    "ret": {
+        "no": 200,
+        "data": {
+            "total": 100,
+            "list": [
+                {
+                    "id": 29326972,
+                    "create_id": 39573520,
+                    "price": -71785986,
+                    "alipay": "CEywwc5jQkHNkaf5YwA3QpkD54tzSpCMzixZP87Rz5mMCa56eJ3tE",
+                    "alipay_url": "e7686cwFHkbn8z",
+                    "wechat": "M8Pb52cZijQehmwDJttAWMcpGf3fN7w2iPfCA7Q7bPtsBXxNABww2tYHNSKWiFja3rD2PM66XYnEjSe7DMeM4XbtXwi"
+                },
+                {
+                    "id": 37573918,
+                    "create_id": 63953933,
+                    "price": 13649720,
+                    "alipay": "Hhbx3MBws5sde6xYzpYjchpcayhMXFsGTHh8K2NwaFjZ37FKeDa3z4",
+                    "alipay_url": "F6cEFpQixCKsb5573aBDXSwnrxQ8edXfEtfrYY7td4DDN8",
+                    "wechat": "CpKNQxTaWtGGWCjRGEniWQZhwFMP5BpNQRDkWCx3yZssrfrw3yYbriT"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,34 @@
+{
+	"name": "微信二维码登录",
+	"method": "get",
+	"params": {
+		"token": {
+			"lbl": "口令",
+		}
+	},
+	"ret": {
+		"no": 200,
+		"data": {
+			"id": 1032,
+			"account": null,
+			"email": null,
+			"tel": "18782071219",
+			"name": "小夜さま",
+			"avatar": "http://thirdwx.qlogo.cn/mmopen/vi_32/SfnD89HFiaJHs4kRl5HgDyuLziboJjNtFk6g0xzvEp8s0MUxvkLUuk5Tnhy2D1ypH0KIpy6VdHwTeStzOib0Vk5Bg/132",
+			"profile": null,
+			"sex": 1,
+			"birth_at": 0,
+			"role": "",
+			"money": 0,
+			"mCost": 0,
+			"create_at": 1560778042526,
+			"province": "Sichuan",
+			"city": "Chengdu",
+			"country": "CN",
+			"rmb": 0,
+			"rmbCost": 0,
+			"t": 1560849389927,
+			"invite_code": "%1gMTAzM5%%"
+		}
+	}
+}

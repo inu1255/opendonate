@@ -1,0 +1,57 @@
+{
+    "name": "添加/修改app",
+    "method": "post",
+    "params": {
+        "id": {
+            "lbl": "id",
+            "type": "int"
+        },
+        "title": {
+            "lbl": "项目名称",
+            "len": [
+                0,
+                16
+            ],
+            "need": "id"
+        },
+        "url": {
+            "lbl": "自动发货接口",
+            "rem": "http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign",
+            "len": [
+                0,
+                256
+            ],
+            "need": "id"
+        },
+        "cer": {
+            "lbl": "签名字符串",
+            "len": [
+                0,
+                32
+            ],
+            "need": "id"
+        },
+        "back": {
+            "lbl": "支付后返回链接",
+            "len": [
+                0,
+                256
+            ]
+        }
+    },
+    "grant": "{U}",
+    "error": {
+        "404": "目标不存在或无权限"
+    },
+    "ret": {
+        "no": 200,
+        "data": {
+            "id": 33997585,
+            "create_id": 81978464,
+            "title": "",
+            "url": "Ee2C8TQQfwCSmHp5Fh6PtDPZhJBYHMGzFwCkKfG8tRnTabJhKA2ez5RsdWrkP7SaeZjFRzBeHhKyha",
+            "cer": "8XEsrYFJrxZ6DPY",
+            "back": "zGeKMRPfZiAXDpeGjmnAr3CeA3SzjEX7Ntm2x3ZepYpfE7ECaeSZn8C2RkbXjbCTCzzsmy8ixAK8QBPhmjhpTkS524pDmBib6KKzjN7JM3Ss35yGGjy6G2ywFGpZjS3KQd52wT7TEQsJt7bc5X8i4NAbEeJYP8fACCh4iAiJBABtYJpZ"
+        }
+    }
+}

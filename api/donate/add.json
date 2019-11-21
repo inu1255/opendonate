@@ -1,41 +1,50 @@
 {
-    "name": "添加接口返回 添加捐赠记录",
+    "name": "添加/修改donate",
     "method": "post",
     "params": {
+        "id": {
+            "lbl": "id",
+            "type": "int"
+        },
         "app_id": {
             "lbl": "项目ID",
             "type": "int",
-            "need": true
+            "need": "id"
         },
-        "id": {
-            "lbl": "订单ID",
-            "type": "int",
-            "need": true
+        "email": {
+            "lbl": "捐赠者邮箱",
+            "len": [
+                0,
+                64
+            ]
         },
         "price": {
             "lbl": "金额",
+            "rem": "0:手输 >0:固定金额",
             "type": "int",
-            "need": true
+            "need": "id"
         },
-        "ext": {
-            "lbl": "附加信息",
-            "need": true
-        },
-        "t": {
-            "lbl": "请求时间(ms)",
-            "type": "int",
-            "need": true
-        },
-        "sign": {
-            "lbl": "签名",
-            "need": true
+        "remark": {
+            "lbl": "备注",
+            "len": [
+                0,
+                64
+            ]
         }
     },
+    "grant": "{U}.lvl<1",
     "error": {
-        "404": "项目不存在或签名错误",
-        "405": "附加信息缺少邮箱"
+        "404": "目标不存在或无权限"
     },
     "ret": {
-        "no": 200
+        "no": 200,
+        "data": {
+            "id": 85037867,
+            "app_id": 73911368,
+            "email": "F7s2AjBpTjBR3",
+            "price": 79040864,
+            "create_at": 1572533223662,
+            "remark": "n6Se4B7bWN"
+        }
     }
 }

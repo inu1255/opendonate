@@ -1,0 +1,98 @@
+{
+    "name": "获取app",
+    "method": "get",
+    "params": {
+        "id": {
+            "lbl": "id",
+            "type": "int"
+        },
+        "create_id": {
+            "lbl": "创建用户ID",
+            "type": "int"
+        },
+        "title": {
+            "lbl": "项目名称",
+            "len": [
+                0,
+                16
+            ]
+        },
+        "url": {
+            "lbl": "自动发货接口",
+            "rem": "http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign",
+            "len": [
+                0,
+                256
+            ]
+        },
+        "cer": {
+            "lbl": "签名字符串",
+            "len": [
+                0,
+                32
+            ]
+        },
+        "back": {
+            "lbl": "支付后返回链接",
+            "len": [
+                0,
+                256
+            ]
+        },
+        "page": {
+            "lbl": "页码",
+            "type": "int",
+            "def": 0
+        },
+        "pageSize": {
+            "lbl": "分页大小",
+            "type": "int",
+            "range": [
+                5,
+                50
+            ],
+            "def": 10
+        },
+        "sortBy": {
+            "lbl": "排序方式",
+            "enum": [
+                "",
+                "id"
+            ]
+        },
+        "desc": {
+            "lbl": "降序",
+            "type": "int",
+            "opts": [
+                "升序",
+                "降序"
+            ]
+        }
+    },
+    "grant": "{U}",
+    "pretreat": "if({U}.lvl<1){}.create_id={U}.id",
+    "ret": {
+        "no": 200,
+        "data": {
+            "total": 100,
+            "list": [
+                {
+                    "id": 24045778,
+                    "create_id": 48498195,
+                    "title": "Q73Sp2y2N",
+                    "url": "KhbX4ZKEDrp75aRaCpnrbYmZEKns6KAJ7izXQnbzXj4J3FKpC4AGFQTYJzfEHSSh4Z3PNrh2bn7bSp6CddYCricEhe3ixzweiH65TJzF7SwcM7PkDDXS55y6REWGsrYiJibBx2zMHxT8sB5WniSZR6cbitjtCZwWxFrSKZr2JBTipEDZZXjYhbWkAkz27jScQXzscCkeCcPkQ4eePn87WZQRXRT",
+                    "cer": "yerWaay",
+                    "back": "KASXTPB2PdAH78ahpnGexZfx2awD4EmJmzybJKkhMsGGzGab8fc7Z5izzMDN4DyAdhyGr8FYb6c4DcDMrPAaJbm85HBH7BfMwnWhyfGS3WTHfMb6xCZmRXJQ5sPACKyWdRhKCQJajeH6iiG44f7Dp48iA8ibPtB8CjdE6bA2kpbX5QQcJ"
+                },
+                {
+                    "id": 73478817,
+                    "create_id": 31821544,
+                    "title": "pc3m",
+                    "url": "Zz6bwjiCpGYH7YDtF8WxQG6tCtkF2EhbSKD828HGKcwmFciCDHtrzYpKPMRD6Bfpzs8NJC2cKAyYcKkGAhmrWkeRM27WnPbBbtPfhz868rtE8RxNd2FNfeWCp4tKw4esbP4dc2dscMscx5cNXCPHs7t2rfh33EkKjT4YxwC2p7dDK2TwGRe3rpwjpta6rGAR",
+                    "cer": "7ZDyeSknTHzW",
+                    "back": "4WffRrRFPiE7pJxWwCHA7CPGH5dcSZeMa7pspy8tPeBhHhR7NZx8RcPGkJB2Qekhp4FG4Dzst5HniYh2bwXEesFC4DQQBj3Ws23JwjSHE5pRG6dcyjwhRmMCHn7kEfYdG5p3h8yb8aCWPZF4JMYdZ2spwhJJrk8mQtW3ha3pB8HdQ75afTGTnK2FNYkDJJxGw34X8BNTab"
+                }
+            ]
+        }
+    }
+}

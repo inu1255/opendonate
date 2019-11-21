@@ -1,37 +1,102 @@
 {
-    "name": "获取捐赠列表",
+    "name": "获取donate",
     "method": "get",
     "params": {
+        "id": {
+            "lbl": "id",
+            "type": "int"
+        },
         "app_id": {
             "lbl": "项目ID",
-            "type": "int",
-            "need": true
+            "type": "int"
         },
-        "offset": {
-            "lbl": "偏移",
+        "email": {
+            "lbl": "捐赠者邮箱",
+            "len": [
+                0,
+                64
+            ]
+        },
+        "minPrice": {
+            "lbl": "金额下限",
+            "rem": "0:手输 >0:固定金额",
+            "type": "int"
+        },
+        "maxPrice": {
+            "lbl": "金额上限",
+            "rem": "0:手输 >0:固定金额",
+            "type": "int"
+        },
+        "minCreateAt": {
+            "lbl": "create_at下限",
+            "rem": "捐赠时间(确认收款时间)",
+            "type": "int"
+        },
+        "maxCreateAt": {
+            "lbl": "create_at上限",
+            "rem": "捐赠时间(确认收款时间)",
+            "type": "int"
+        },
+        "remark": {
+            "lbl": "备注",
+            "len": [
+                0,
+                64
+            ]
+        },
+        "page": {
+            "lbl": "页码",
             "type": "int",
-			"range": [0],
-			"def": 0
-		},
-		"sort": {
-			"lbl": "排序",
-			"enum": [
-				"create_at",
-				"price"
-			]
-		},
-		"order": {
-			"lbl": "排序升降",
-			"enum": [
-				"desc",
-				"asc"
-			]
-		}
-	},
-	"error": {
-		"404": "项目不存在"
-	},
+            "def": 0
+        },
+        "pageSize": {
+            "lbl": "分页大小",
+            "type": "int",
+            "range": [
+                5,
+                50
+            ],
+            "def": 10
+        },
+        "sortBy": {
+            "lbl": "排序方式",
+            "enum": [
+                "",
+                "id"
+            ]
+        },
+        "desc": {
+            "lbl": "降序",
+            "type": "int",
+            "opts": [
+                "升序",
+                "降序"
+            ]
+        }
+    },
+    "grant": "{U}",
     "ret": {
-        "no": 200
+        "no": 200,
+        "data": {
+            "total": 100,
+            "list": [
+                {
+                    "id": 66094362,
+                    "app_id": 23678236,
+                    "email": "S8D77saKryyYZ4GFEYZpkfXy8BbB3BQ7WSzkGQCnmQtZBX887rpDQ7",
+                    "price": 80377277,
+                    "create_at": 1572060522999,
+                    "remark": "JzsaQ8ANYzbRHFzs4Pd"
+                },
+                {
+                    "id": 39485314,
+                    "app_id": 20867092,
+                    "email": "MBcmWTEsCmWJPQXeZ4TtjjFTi7SziyemS7ZK5ESRrRanb",
+                    "price": 23260416,
+                    "create_at": 1570170174075,
+                    "remark": "7TKF3NdAYySzBmACfmJp63JwXwNrXA7tjNrXhayy8MhAcs2e3xrYTJrPX"
+                }
+            ]
+        }
     }
 }
