@@ -1,146 +1,189 @@
 {
-	"name": "获取orders",
-	"method": "get",
-	"params": {
-		"id": {
-			"lbl": "id",
-			"type": "int"
-		},
-		"user_id": {
-			"lbl": "user_id",
-			"rem": "收款方ID(冗余)",
-			"type": "int"
-		},
-		"qr_id": {
-			"lbl": "二维码ID",
-			"type": "int"
-		},
-		"app_id": {
-			"lbl": "项目ID",
-			"type": "int"
-		},
-		"type": {
-			"lbl": "二维码类型",
-			"type": "int",
-			"opts": ["支付宝", "微信"]
-		},
-		"minCreateAt": {
-			"lbl": "订单创建时间下限",
-			"type": "int"
-		},
-		"maxCreateAt": {
-			"lbl": "订单创建时间上限",
-			"type": "int"
-		},
-		"state": {
-			"lbl": "状态",
-			"type": "int",
-			"opts": ["待审核", "支付失败", "支付成功"]
-		},
-		"minPayAt": {
-			"lbl": "pay_at下限",
-			"rem": "用户说自己已经付款了",
-			"type": "int"
-		},
-		"maxPayAt": {
-			"lbl": "pay_at上限",
-			"rem": "用户说自己已经付款了",
-			"type": "int"
-		},
-		"ext": {
-			"lbl": "商户自定义参数",
-			"len": [0, 2048]
-		},
-		"ret": {
-			"lbl": "发货状态",
-			"type": "int",
-			"opts": ["待发货", "发货失败", "发货成功", "手动发货"]
-		},
-		"msg": {
-			"lbl": "报错信息",
-			"len": [0, 256]
-		},
-		"minPrice": {
-			"lbl": "金额下限",
-			"rem": "0:手输 >0:固定金额(冗余)",
-			"type": "int"
-		},
-		"maxPrice": {
-			"lbl": "金额上限",
-			"rem": "0:手输 >0:固定金额(冗余)",
-			"type": "int"
-		},
-		"ip": {
-			"lbl": "订单创建IP",
-			"len": [0, 64]
-		},
-		"ua": {
-			"lbl": "订单创建客户端",
-			"len": [0, 256]
-		},
-		"page": {
-			"lbl": "页码",
-			"type": "int",
-			"def": 0
-		},
-		"pageSize": {
-			"lbl": "分页大小",
-			"type": "int",
-			"range": [5, 50],
-			"def": 10
-		},
-		"sortBy": {
-			"lbl": "排序方式",
-			"enum": ["", "id"],
-			"def": "id"
-		},
-		"desc": {
-			"lbl": "降序",
-			"type": "int",
-			"opts": ["升序", "降序"],
-			"def": 1
-		}
-	},
-	"grant": "{U}",
-	"pretreat": "if({U}.lvl){}.user_id={U}.id",
-	"ret": {
-		"no": 200,
-		"data": {
-			"total": 100,
-			"list": [
-				{
-					"id": 52435109,
-					"user_id": 26165208,
-					"qr_id": 38190545,
-					"app_id": 32086217,
-					"type": -65370885,
-					"create_at": 1570394348073,
-					"state": -64727889,
-					"pay_at": 1569361448784,
-					"ext": "2YxB7BZETDaWdDBS5aajYhESQYiHJ8bt8MB5TrxNnWxB4m3FyjzSYaYpZNTbd8yrRYCBJknsRAthW7pFz22hx2CAJ4JYt66bBAEATWM2tikEptrTayCHKkEsfrjDtD4EYJZXYCpKtwC3xrTdAs2WNMMn6EsMGGHmxpJ3zEKa84t2NZs6seYhw6mkkrG5FHxfwaCzHnFEeYt6JN5kRTHjDFEMn4fTyskZDkB",
-					"ret": 13518473,
-					"msg": "s65DtSXW5XN2mp25p2xidsWBJ727Wib4sxM68mJ8C2aYHFWfEPnCfBtyEHF2MZbjSspFct6RXbPJKG7pthDDw5aJeTGfcw28Fmb7P4a3WnFb",
-					"price": 8099633,
-					"ip": "FnDb8AmCWA2A355XSDFr3bccDZ3SAxs4tnb2",
-					"ua": "3nbJYDzNAstmQTSkmk4M8eFSzJY6cRdjyDCmHZEnsXTexssshzXAmiKbkd6NNib3xKb7r4EYDQZpWafcB52XFTdHddzZaa4Eh36SrS75c5aHXKNmWtZj23HfRGmZa5dYmbnj3rQy4ecycGsXeNespdraXW3PKWXCf8fpi6Mf24iDFi4SKZ73fyi7S4Ez4zScYed6fBsy4mHWwZ27esr8834J3WQcsashHMEkZ8fXaGa"
-				},
-				{
-					"id": 75796491,
-					"user_id": 1287487,
-					"qr_id": 83829828,
-					"app_id": 79819698,
-					"type": -15003534,
-					"create_at": 1571284659689,
-					"state": 65135317,
-					"pay_at": 1571595437049,
-					"ext": "WWQDN4SnH32yn6JBwBRpGtB3JcQ6fCaBHkkwB8bQpTdPdpZxS7iKtXQh3HiyRcY8dGz7hBSB2KyHbya4rMZFNZHc33h8QSzFXeN42G78pkPPyfBs2CmC6kDisQbGiSR7HYJCbX5Gx5xDGb3nTccxHsK45y5KbnY3zGcCniahdW6kRYiBwrd4rSPt2SGjp8yPjrt4RzHC5FQzzj2BHfDn3QX5ycedkecQ5Did4B73st4pdj2dHZmPY5ksWmHEwiWnx5EnPSt4Htp26N3zYiH28TpcKNNexHRRSa3H6wQsYyz5wmi6FkPf7QYizbdytFjmbm3QkWGjHeWpdjRW3XXrc8rFYtFxNTd56f2yni8aytERAC6pBECCPDhfSQmCPNKHan7M7ArPfhzrR4ekDkcM7sHcNXJdfBtGhdGtXMXZQhFx573kF2DZcdbxfHrKAHYxriXMTjPeG3NDHrD8GsSxWX7SN5Di3Snt5PrijxkJrrWCb2Dc5akPjAp4GCnZbCm3c5QEn35R6K8jMEsxmimPHz3yBHnGPfF8TESnJ76Srp6NzrsX4jND3bEHCdQ3N7jyhGbQEZhhwiPFGp44Dp3sxEQr6F6xZDfrXA4cKDeccCjS2JQMSkyG2rfZKneQiZFfm7GBYY5bbxnc5PZZthDpHxkysjc34MFhaPxXCfQxhWwtJxfWBpacRm5yka46mNhMXEJ5QSWferBPHm26ryyscJz7AYrbCCFmiYJrj73fRX2dGTdRJ5z6fEw6beyTzQ46ReaYpfASjZWFxZPAR5sxZ35C27eHzcr55Zm4t8yyy55TaPAh8ieKM2zYzyY63wsWBfGdskyh4XWNa8SSjcQdMjTWEzhcNDtcrEezEHr8",
-					"ret": 35566299,
-					"msg": "Nk8TDQriBQkASD3GcDydTAyky6HkMRhpP4Zx6wrt6",
-					"price": -5647814,
-					"ip": "iYSpjzPhj6aaWmKR3SsNZNXShj3YDxysCBjtdBAMndnZMntcxPmzK5YRf8",
-					"ua": "fTJWhiRxEbiMhKZ7TDQnEDXGyskK2ixAiBinBBMbxkpsAwrebG8DfKCmPfYiSMw2sD2tZC53npyewsawRhpRsM7T5dGEmXJCajZ"
-				}
-			]
-		}
-	}
+    "name": "获取orders",
+    "method": "get",
+    "params": {
+        "id": {
+            "lbl": "id",
+            "type": "int"
+        },
+        "account": {
+            "lbl": "收款方账号",
+            "len": [
+                0,
+                32
+            ]
+        },
+        "appname": {
+            "lbl": "项目名",
+            "len": [
+                0,
+                32
+            ]
+        },
+        "type": {
+            "lbl": "二维码类型",
+            "type": "int",
+            "opts": [
+                "支付宝",
+                "微信"
+            ]
+        },
+        "minCreateAt": {
+            "lbl": "订单创建时间下限",
+            "type": "int"
+        },
+        "maxCreateAt": {
+            "lbl": "订单创建时间上限",
+            "type": "int"
+        },
+        "state": {
+            "lbl": "状态",
+            "type": "int",
+            "opts": [
+                "待审核",
+                "支付失败",
+                "支付成功"
+            ]
+        },
+        "minPayAt": {
+            "lbl": "pay_at下限",
+            "rem": "用户说自己已经付款了",
+            "type": "int"
+        },
+        "maxPayAt": {
+            "lbl": "pay_at上限",
+            "rem": "用户说自己已经付款了",
+            "type": "int"
+        },
+        "ret": {
+            "lbl": "发货状态",
+            "type": "int",
+            "opts": [
+                "待发货",
+                "发货失败",
+                "发货成功",
+                "已手动发货"
+            ]
+        },
+        "msg": {
+            "lbl": "报错信息",
+            "len": [
+                0,
+                256
+            ]
+        },
+        "minPrice": {
+            "lbl": "金额下限",
+            "rem": "0:手输 >0:固定金额(冗余)",
+            "type": "int"
+        },
+        "maxPrice": {
+            "lbl": "金额上限",
+            "rem": "0:手输 >0:固定金额(冗余)",
+            "type": "int"
+        },
+        "ip": {
+            "lbl": "订单创建IP",
+            "len": [
+                0,
+                64
+            ]
+        },
+        "ua": {
+            "lbl": "订单创建客户端",
+            "len": [
+                0,
+                256
+            ]
+        },
+        "email": {
+            "lbl": "捐赠者邮箱",
+            "len": [
+                0,
+                64
+            ]
+        },
+        "remark": {
+            "lbl": "备注",
+            "len": [
+                0,
+                2048
+            ]
+        },
+        "page": {
+            "lbl": "页码",
+            "type": "int",
+            "def": 0
+        },
+        "pageSize": {
+            "lbl": "分页大小",
+            "type": "int",
+            "range": [
+                5,
+                50
+            ],
+            "def": 10
+        },
+        "sortBy": {
+            "lbl": "排序方式",
+            "enum": [
+                "",
+                "id",
+                "create_at",
+                "price",
+                "email",
+                "remark"
+            ]
+        },
+        "desc": {
+            "lbl": "降序",
+            "type": "int",
+            "opts": [
+                "升序",
+                "降序"
+            ]
+        }
+    },
+    "grant": "{U}",
+    "pretreat":"if({U}.lvl!=0){}.account={U}.account",
+    "ret": {
+        "no": 200,
+        "data": {
+            "total": 100,
+            "list": [
+                {
+                    "id": 6978884,
+                    "account": "N",
+                    "appname": "bc",
+                    "type": -66861897,
+                    "create_at": 1578658750000,
+                    "state": 59391098,
+                    "pay_at": 1579128824057,
+                    "ret": 9932092,
+                    "msg": "aiHy6RFc7Fc3c5nd44r5tGSwQ8A",
+                    "price": 17697067,
+                    "ip": "ppFE8MTafCwNyQEAxH",
+                    "ua": "MmZDEjsPnTmXKQ4MkTmeA2jxxEdwZNsAZfCQTsDynfKAN4pTE",
+                    "email": "XkrE8DiSCx3Gr84fPyRRdhzKDTGEEKeSnMaX5zdrZY",
+                    "remark": "dHWtHNdD6wmN4sP32KRSFXjDQf4Xc8Mxhz2DcBFwN4Mfhst5wwyrbjMAwCeEHSn3FdWAEZWHkG2TN3yescYGcnsAcFNxnwzPrmpmHFsMJWESd354QsR52kKifB8PM3NQR5PDkw43rfDYWHTxhemsBeacHAPBe6A8NbDNw3xenGDBA4rKCffjBQ2nh8NXKQdWW2mcyR8FSmcTC8JrWCZA6NcFhPiD4AH8ER6WfE382eSr4z6PJm2FpC66iTNe2F7dxKypC8FzjeAtjR24paD4jWSfPZmppdKhDKz4DXEG7HezKnWD55384P34D5sJ54tC48n5NGiKihcymzm3W6RwXkSY28nWDGBRzTrDT3SfCz5HiQd6xGKEi8QWE4Jcwb2k7sJRddcmmzEyddfP8EDPQPbKpaWnkEYHcXxSNRSxtyCs54wkiSP2RHchBnCyGZX7CCSTPmtWPbK2NBezPAkaJMcQHn54AWcJsxDpBN3TQbzMzP54eK4H8AEePf3HNtnRNMPF8bixYS4SNdhXZ2c8CDH87xmwCaiCjhjdMWK8zZZHjp7CPCPRKyXBZ3SQSdYnXhxtJSwEFxjEab2QYHfYTfPdXHzeQ8PG8ZwiwW7aK3Mrs72G8nhEYwAM6JFXYD2zBSNEAH5iNNNWmKmWeSE7neyH6sxYDDaird5awdifrnxskjyXxtm6AprDE7tNz4Yt7yySYfKMHM58kA6bFDsibhiHiYBSh4GJHx8fDddZRcSmYzp2nNwJ6WNjHXwEHQZRCJzfza2eGPakXeZwihRerp3ysFHbFrGrAAbGf8aF7QdrGtQbhDidfFYQCtYnbeYCmXPFQEAxmQFseEhAsityWWRJ2ZfE8JcaBxajJjZZBidfGwN4RWfrQWfPzFCms7jAFFJ6BKd6dKNWRQmRiWYPTxbCJw5shYckjRrtZQ8ZTeFNnexjQi6drhSiJBMEcsFhQPZzGyYxEyjC7W6zmGSwDFGDA7yKebWBGE387GKjG6p7p8JcKGPW7AEfn7kK58jzCX7QTfzE4dJxMdKwQZKXWD6Cy8A8MKhbcbj"
+                },
+                {
+                    "id": 75499591,
+                    "account": "cX",
+                    "appname": "ZFEZQxGSzN2Pc8cGHKWw8b4EmBd6FD",
+                    "type": 18948215,
+                    "create_at": 1578437523401,
+                    "state": 37956689,
+                    "pay_at": 1579378881579,
+                    "ret": -49271031,
+                    "msg": "Zs56p2nRf8jdkKpidR3xGzf",
+                    "price": -13103561,
+                    "ip": "ythaTXYQmiTzWFb7w3xJZCCTm3Hsx3SipyWecp",
+                    "ua": "nCFK8enzhRrJtcZ6WfefMBXsdaCkmR7ipsTBRREHXzeCza2C68CzpQ5Hh4pNPXShXGrbbQbtWQGxfCDjQNMbQ3pQDHxzHWNxaxmA67cxKtmANFxjd3XcZjj5YmxG352Z8WBcQiJcyzjtsY5DT8",
+                    "email": "KRKHxjJRMc2eHbAmdBEsDapM746Dzhy",
+                    "remark": "PtRXxS7N78"
+                }
+            ]
+        }
+    }
 }

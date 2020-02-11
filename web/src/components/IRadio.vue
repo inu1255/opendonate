@@ -50,18 +50,17 @@ export default {
 <style lang="less">
 @import "~@/styles/define.less";
 .i-radio {
-	width: 100%;
 	position: relative;
 	display: flex;
 	font-size: 0.9rem;
-	+ .i-radio,
-	+ .i-input {
-		margin-top: 0.7rem;
+	margin-right: 1em;
+	&:last-child {
+		margin-right: 0;
 	}
 	> .label {
-		color: #999;
+		color: #fd24bc;
 		display: inline-block;
-		margin-right: 0.5rem;
+		margin-right: 0.5em;
 	}
 	> .disabled {
 		cursor: not-allowed;
@@ -70,6 +69,9 @@ export default {
 		}
 	}
 	> label {
+		+ label {
+			margin-left: 0.5em;
+		}
 		> span {
 			font-size: 0.8em;
 		}

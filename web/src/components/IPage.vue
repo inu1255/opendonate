@@ -4,7 +4,7 @@ export default {
 	props: {
 		total: { type: Number, required: true }, // 总共多少条数据
 		value: { type: Number, default: 0 }, // 当前页码
-		pageSize: { type: Number, default: 12 }, // 每页多少条数据
+		pageSize: { type: Number, default: 10 }, // 每页多少条数据
 		pageCnt: { type: Number, default: 7 } // 最多显示多少个数字(包含…)
 	},
 	computed: {

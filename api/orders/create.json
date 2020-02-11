@@ -3,9 +3,12 @@
 	"method": "post",
 	"freq": 5000,
 	"params": {
-		"aid": {
-			"lbl": "项目ID",
-			"type": "int",
+		"account": {
+			"lbl": "收款人账号",
+			"need": true
+		},
+		"appname": {
+			"lbl": "项目名称",
 			"need": true
 		},
 		"price": {
@@ -19,8 +22,12 @@
 			"type": "int",
 			"opts": ["支付宝", "微信"]
 		},
-		"ext": {
-			"lbl": "附加信息",
+		"email": {
+			"lbl": "邮箱",
+			"len": [0, 64]
+		},
+		"remark": {
+			"lbl": "备注",
 			"len": [0, 2048]
 		},
 		"json": {

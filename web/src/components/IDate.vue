@@ -33,14 +33,14 @@ export default {
 				if (this.format)
 					return this.fromNow(this.value, this.digits);
 				else
-					return utils.format(this.value, this.format || 'YYYY-MM-DD hh:mm');
+					return utils.format(this.format || 'YYYY-MM-DD hh:mm', this.value);
 			}
 			return '';
 		},
 		val: function () {
 			if (this.value) {
 				if (this.format)
-					return utils.format(this.value, this.format || 'YYYY-MM-DD hh:mm');
+					return utils.format(this.format || 'YYYY-MM-DD hh:mm', this.value);
 				else
 					return this.fromNow(this.value, this.digits);
 			}
@@ -80,9 +80,6 @@ export default {
 			this.tick;
 			digits = digits || 0;
 			if (!v) return def || '未设置';
-			if (typeof v === "number" && v < 1e12) {
-				v *= 1e3;
-			}
 			v = +new Date(v)
 			var suffix = ''
 			if (v > 86400e3 * 365) {

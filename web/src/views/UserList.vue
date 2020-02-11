@@ -1,55 +1,69 @@
 <template>
-	<div class="views-user-list">
-		<div class="tar">
-			<i-button class="green" @click="$refs.table.search()" style="margin-left:3rem;">搜索</i-button>
-		</div>
-		<hr>
-		<el-table :data="data.list" size="mini" style="width: 100%" @sort-change="data.onsort($event)">
-			<el-table-column prop="id" label="#" width="64">
-			</el-table-column>
-			<el-table-column prop="avatar" label="头像" align="center" width="84">
-				<template slot-scope="{row}">
-					<el-avatar :src="row.avatar" :title="row.name"></el-avatar>
-				</template>
-			</el-table-column>
-			<el-table-column prop="name" label="用户名" width="150">
-			</el-table-column>
-			<el-table-column prop="money" label="券总数" width="96" sortable="column">
-			</el-table-column>
-			<el-table-column prop="rmb" label="总返利" width="96" sortable="column">
-			</el-table-column>
-			<el-table-column prop="rmbCost" label="已提现" width="96" sortable="column">
-			</el-table-column>
-			<el-table-column prop="create_at" label="注册时间" width="100" sortable="column">
-				<template slot-scope="{row}">
-					<i-date :value="row.create_at"></i-date>
-				</template>
-			</el-table-column>
-			<el-table-column prop="login_at" label="登录时间" width="100" sortable="column">
-				<template slot-scope="{row}">
-					<i-date :value="row.login_at"></i-date>
-				</template>
-			</el-table-column>
-			<el-table-column prop="get_coupon_at" label="最近领券" width="100" sortable="column">
-				<template slot-scope="{row}">
-					<i-date :value="row.get_coupon_at"></i-date>
-				</template>
-			</el-table-column>
-		</el-table>
-		<div class="tac">
-			<el-pagination @current-change="data.search($event-1)" :page-size="10" layout="total, prev, pager, next, jumper" :total="data.total">
-			</el-pagination>
-		</div>
-	</div>
+	<v-container>
+		<v-data-table class="elevation-1" :items="data.list" :options="data.options" @update:options="data.update($event)" :headers="headers" :server-items-length="data.total" :loading="data.loading" hide-default-footer>
+			<template v-slot:top>
+				<v-toolbar flat color="white">
+					<v-toolbar-title>用户管理</v-toolbar-title>
+					<v-spacer></v-spacer>
+					<v-btn @click="data.search(0)" color="success" class="ml-2">刷新</v-btn>
+				</v-toolbar>
+			</template>
+			<template v-slot:item.avatar="{item}">
+				<v-avatar size="36"><img :src="item.avatar"></v-avatar>
+			</template>
+			<template v-slot:item.create_at="{item}">
+				<i-date :value="item.create_at"></i-date>
+			</template>
+			<template v-slot:item.login_at="{item}">
+				<i-date :value="item.login_at"></i-date>
+			</template>
+			<template v-slot:item.get_coupon_at="{item}">
+				<i-date :value="item.get_coupon_at"></i-date>
+			</template>
+			<template v-slot:footer v-if="$size.sm&&data.totalPage>1">
+				<v-divider></v-divider>
+				<i-page class="pa-2" circle :value="data.options.page-1" @input="data.options.page=$event+1" :total="data.total"></i-page>
+			</template>
+		</v-data-table>
+		<v-btn v-if="!$size.sm" class="mt-2" block text :loading="data.loading" @click="data.loadmore()">加载更多</v-btn>
+	</v-container>
 </template>
 <script>
 export default {
 	data() {
 		return {
-			s: {
-
-			},
-			data: new utils.DataSource(this.query.bind(this))
+			data: new utils.DataSource(this.query),
+			headers: [{
+				value: "id",
+				text: "#",
+				sortable: false,
+			}, {
+				value: "avatar",
+				text: "头像",
+				sortable: false,
+			}, {
+				value: "name",
+				text: "用户名",
+				sortable: false,
+			}, {
+				value: "money",
+				text: "券总数",
+			}, {
+				value: "rmb",
+				text: "总返利",
+			}, {
+				value: "rmbCost",
+				text: "已提现",
+			}, {
+				value: "create_at",
+				text: "注册时间",
+			}, {
+				value: "login_at",
+				text: "登录时间",
+			}, {
+				value: "get_coupon_at",
+				text: "最近领券",
+			},]
 		}
 	},
 	computed: {
@@ -60,18 +74,9 @@ export default {
 		},
 	},
 	mounted() {
-		this.data.search()
 	},
 	components: {
 
 	},
 }
 </script>
-<style lang="less">
-@import "~@/styles/define.less";
-.views-user-list {
-	padding: 1rem;
-	max-width: 56rem;
-	margin: 0 auto;
-}
-</style>

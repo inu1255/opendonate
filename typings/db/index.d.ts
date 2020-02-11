@@ -16,6 +16,7 @@ interface User {
 	invite_id?: number,  // 邀请人
 	create_at: number,  // 注册时间
 	login_at?: number,  // 登录时间
+	github_id?: number,  // 关联github的ID
 }interface Verify {
 	id?: number, 
 	title?: string,  // 验证码标识
@@ -32,39 +33,33 @@ interface User {
 	create_at: number,  // 上传时间
 }interface Qrcode {
 	id?: number, 
-	create_id: number,  // 创建用户ID
+	account: string,  // 创建用户账号
 	price: number,  // 金额 0:手输 >0:固定金额
 	alipay?: string,  // 支付宝 二维码链接
 	alipay_url?: string,  // 支付宝 支付链接
 	wechat?: string,  // 微信 二维码链接
 }interface App {
 	id?: number, 
-	create_id: number,  // 创建用户ID
+	account: string,  // 收款方账号
+	appname: string,  // 项目名
 	title: string,  // 项目名称
-	url: string,  // 自动发货接口 http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign
-	cer: string,  // 签名字符串
+	url?: string,  // 自动发货接口 http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign
+	cer?: string,  // 签名字符串
 	back?: string,  // 支付后返回链接
-	type?: number,  // 项目类型
+	detail?: string,  // 项目介绍
 }interface Orders {
 	id?: number, 
-	user_id: number,  // 收款方ID(冗余)
-	qr_id: number,  // 二维码ID
-	app_id: number,  // 项目ID
-	type: number,  // 二维码类型
+	account: string,  // 收款方账号
+	appname: string,  // 项目名
+	type?: number,  // 二维码类型
 	create_at: number,  // 订单创建时间
 	state?: number,  // 状态
 	pay_at?: number,  // 用户说自己已经付款了
-	ext?: string,  // 商户自定义参数
 	ret?: number,  // 发货状态
 	msg?: string,  // 报错信息
 	price: number,  // 金额 0:手输 >0:固定金额(冗余)
 	ip?: string,  // 订单创建IP
 	ua?: string,  // 订单创建客户端
-}interface Donate {
-	id?: number, 
-	app_id: number,  // 项目ID
 	email?: string,  // 捐赠者邮箱
-	price: number,  // 金额 0:手输 >0:固定金额
-	create_at: number,  // 捐赠时间(确认收款时间)
 	remark?: string,  // 备注
 }}

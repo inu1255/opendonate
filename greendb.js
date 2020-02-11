@@ -19,6 +19,7 @@ df.table('user', [
 	df.unsigned('invite_id').default(0).comment('邀请人'),
 	df.bigint('create_at').notNull().comment('注册时间'),
 	df.bigint('login_at').default(0).comment('登录时间'),
+	df.unsigned('github_id').comment('关联github的ID'),
 	df.primary('id'),
 	df.unique('account'),
 	df.unique('email'),
@@ -50,57 +51,46 @@ df.table('file', [
 
 df.table('qrcode', [
 	df.unsigned('id').notNull().auto_increment(),
-	df.unsigned('create_id').notNull().comment('创建用户ID'),
+	df.varchar('account', 32).notNull().comment('创建用户账号'),
 	df.int('price').notNull().comment('金额 0:手输 >0:固定金额'),
 	df.varchar('alipay', 256).default('').comment('支付宝 二维码链接'),
 	df.varchar('alipay_url', 128).default('').comment('支付宝 支付链接'),
 	df.varchar('wechat', 256).default('').comment('微信 二维码链接'),
 	df.primary('id'),
-	df.unique('create_id,price'),
+	df.unique('account,price'),
 ]);
 // qrcode生成付款链接 -> 用户生成orders -> 通知商家 -> 支付 -> [用户点击已经付款] -> 商家反馈已经付款 -> 调用发货接口 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign
 
 df.table('app', [
 	df.unsigned('id').notNull().auto_increment(),
-	df.unsigned('create_id').notNull().comment('创建用户ID'),
+	df.varchar('account', 32).notNull().comment('收款方账号'),
+	df.varchar('appname', 32).notNull().comment('项目名'),
 	df.varchar('title', 16).notNull().comment('项目名称'),
-	df.varchar('url', 256).notNull().comment('自动发货接口 http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign'),
-	df.varchar('cer', 32).notNull().comment('签名字符串'),
+	df.varchar('url', 256).default('').comment('自动发货接口 http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign'),
+	df.varchar('cer', 32).default('').comment('签名字符串'),
 	df.varchar('back', 256).default('').comment('支付后返回链接'),
-	df.opts('type', ['自定义', '捐赠']).default(0).comment('项目类型'),
 	df.text('detail').comment('项目介绍'),
 	df.primary('id'),
-	df.unique('create_id,title'),
+	df.unique('account,appname'),
 ]);
 
 df.table('orders', [
 	df.unsigned('id').notNull().auto_increment(),
-	df.unsigned('user_id').notNull().comment('收款方ID(冗余)'),
-	df.unsigned('qr_id').notNull().comment('二维码ID'),
-	df.unsigned('app_id').notNull().comment('项目ID'),
+	df.varchar('account', 32).notNull().comment('收款方账号'),
+	df.varchar('appname', 32).notNull().comment('项目名'),
 	df.opts('type', ['支付宝', '微信']).comment('二维码类型'),
 	df.bigint('create_at').notNull().comment('订单创建时间'),
 	df.opts('state', ["待审核", "支付失败", "支付成功"]).notNull().default(0).comment('状态'),
 	df.bigint('pay_at').default(0).comment('用户说自己已经付款了'),
-	df.varchar('ext', 2048).default('').comment('商户自定义参数'),
-	df.opts('ret', ["待发货", "发货失败", "发货成功", "手动发货"]).notNull().default(0).comment('发货状态'),
+	df.opts('ret', ["待发货", "发货失败", "发货成功", "已手动发货"]).notNull().default(0).comment('发货状态'),
 	df.varchar('msg', 256).default('').comment('报错信息'),
 	df.int('price').notNull().comment('金额 0:手输 >0:固定金额(冗余)'),
 	df.varchar('ip', 64).comment('订单创建IP'),
 	df.varchar('ua', 256).default('').comment('订单创建客户端'),
-	df.primary('id'),
-	df.index('qr_id'),
-	df.index('user_id'),
-]);
-
-df.table('donate', [
-	df.unsigned('id').notNull().auto_increment(),
-	df.unsigned('app_id').notNull().comment('项目ID'),
 	df.varchar('email', 64).comment('捐赠者邮箱'),
-	df.int('price').notNull().comment('金额 0:手输 >0:固定金额'),
-	df.bigint('create_at').notNull().comment('捐赠时间(确认收款时间)'),
-	df.varchar('remark', 64).default('').comment('备注'),
+	df.varchar('remark', 2048).default('').comment('备注'),
 	df.primary('id'),
+	df.index('account,appname'),
 ]);
 
 module.exports = df;

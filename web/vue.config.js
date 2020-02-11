@@ -23,6 +23,7 @@ module.exports = {
 		config.externals = {
 			'vue': 'Vue',
 			'vue-router': 'VueRouter',
+			'vuetify': 'Vuetify',
 		};
 		// delete config.optimization.splitChunks
 		// config.entry['i-table'] = './src/components/index.js'

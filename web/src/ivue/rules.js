@@ -1,6 +1,12 @@
 import Vue from 'vue';
 
 const rules = {
+	account(need, lbl = "账号") {
+		return [
+			need ? (v => !!v || `${lbl}是必填项`) : true,
+			v => !v || /^\w+$/.test(v) || `${lbl}只能由字母和数字组成`,
+		];
+	},
 	email(need, lbl = "邮箱") {
 		return [
 			need ? (v => !!v || `${lbl}是必填项`) : true,
@@ -18,6 +24,9 @@ const rules = {
 			need ? (v => !!v || `${lbl}是必填项`) : true,
 			v => !v || v >= 0 || `${lbl}不能为负数`
 		];
+	},
+	need(lbl = '') {
+		return [v => !!v || `${lbl}是必填项`];
 	},
 };
 

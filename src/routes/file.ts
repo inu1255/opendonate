@@ -15,7 +15,7 @@ export async function upload(req: Request, res: Response) {
     let data: db.File = {
         name: body.f.name,
         ext: path.extname(body.f.name),
-        ip: req.realip,
+        ip: req.ip,
         ua: req.ua,
         create_at: +new Date(),
         create_id: user.id,

@@ -93,38 +93,51 @@ export const storage = function() {
  * @param {{title: string; props: {}}} [options] 
  */
 export function open(comp, props, options) {
-	let value;
 	options = options || {};
-	if (typeof props != "object") props = { value: props };
+	if (props == null || typeof props != "object") props = { value: props };
+	else if (props.value == null) props.value = '';
 	return new Promise(function(resolve, reject) {
 		var cb = resolve;
 		var vue = new Vue({
 			data: {
 				show: true
 			},
+			watch: {
+				show() {
+					if (this.show) return;
+					cb(props.value);
+					vue.$destroy();
+					document.body.removeChild(vue.$el);
+				}
+			},
 			render(h) {
 				let children = [h(comp, {
 					on: {
 						input(v) {
-							value = v;
+							props.value = v;
+							if (!options.showClose) vue.show = false;
+						},
+						change(v) {
+							props.value = v;
+							vue.show = false;
 						},
 						close() {
 							vue.show = false;
 						},
 						cancel(v) {
 							cb = reject;
-							value = v;
+							props.value = v;
 							vue.show = false;
 						},
 						submit(v) {
 							cb = resolve;
-							value = v;
+							props.value = v;
 							vue.show = false;
 						}
 					},
 					props: props,
 				})];
-				if (options.showClose != false)
+				if (options.showClose)
 					children.push(h('span', { attrs: { slot: 'footer' }, slot: 'footer' }, [
 						h('v-btn', { props: { size: 'mini' }, on: { click() { cb = reject, vue.show = false; } } }, options.failureText || '取消'),
 						h('v-btn', { props: { size: 'mini', type: 'primary' }, on: { click() { cb = resolve, vue.show = false; } } }, options.successText || '确定'),
@@ -132,15 +145,13 @@ export function open(comp, props, options) {
 				return h('i-modal', {
 					props: Object.assign({}, options, { open: this.show }),
 					on: {
-						close() {
+						"update:open"(v) {
+							if (v) return;
+							cb = reject;
+							props.value = '关闭弹窗';
 							vue.show = false;
-						},
-						closed() {
-							cb(value);
-							vue.$destroy();
-							document.body.removeChild(vue.$el);
-						},
-					},
+						}
+					}
 				}, children);
 			}
 		});
@@ -378,6 +389,33 @@ export function form(props) {
 		});
 		vue.$mount();
 		root.appendChild(vue.$el);
+	});
+}
+
+export function paste() {
+	return new Promise(function(resolve, reject) {
+		let div = document.createElement('div');
+		div.setAttribute('style', 'width:100vw;height:100vh;position:fixed;top:0;left:0;background:rgba(0,0,0,.7);color:#fff;font-size:32px;z-index:10000;text-align:center;line-height:100vh;');
+		let key = /macintosh|mac os x/i.test(navigator.userAgent) ? 'cmd' : 'ctrl';
+		div.innerHTML = `请按下<kbd>${key}</kbd>+<kbd>v</kbd>`;
+		document.body.appendChild(div);
+		let close = () => {
+			document.removeEventListener('paste', success);
+			document.removeEventListener('click', failure);
+			document.body.removeChild(div);
+		};
+		let success = e => {
+			resolve(e.clipboardData.getData('text/plain'));
+			close();
+		};
+		let failure = e => {
+			reject('用户放弃读取剪切板');
+			close();
+		};
+		document.addEventListener('paste', success);
+		setTimeout(function() {
+			document.addEventListener('click', failure);
+		}, 300);
 	});
 }
 

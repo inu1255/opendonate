@@ -49,8 +49,10 @@ export interface GreenApi {
     name: string; // 接口名称
     rem?: string; // 接口说明
     url: string; // 接口路径
+    alias: string | string[]; // 接口路径别名
     method: GreenMethod | GreenMethod[]; // 接口方法
     freq: number; // 每个IP多少毫秒之内只能调用一次
+    additional: boolean; // 允许额外的参数
     params: { [key: string]: GreenParam }; // 接口参数
     pretreat: string; // 预处理
     grant: GreenChecks; // 权限
@@ -356,7 +358,7 @@ function readApi(filename: string): GreenApi {
  * @param fnKey 函数键
  */
 function getHander(filename: string, fnKey: string): RequestHandler {
-    var handler;
+    var handler: RequestHandler;
     try {
         let mod = require(filename);
         // console.log(Object.keys(mod), key);
@@ -369,7 +371,9 @@ function getHander(filename: string, fnKey: string): RequestHandler {
 
 class ApiBuilder {
     private router: Router;
-    constructor() {
+    private mountpath: string;
+    constructor(mountpath?: string) {
+        this.mountpath = mountpath;
         this.router = Router();
     }
     walk(apiDir: string, routeDir: string) {
@@ -412,21 +416,22 @@ class ApiBuilder {
         }
         // 接口定义没问题
         // 构造参数检查函数
-        let checks = [];
+        let checks: RequestHandler[] = [];
         if (data.freq) {
             // 访问频率控制
             let ipMap = {};
             checks.push(function(req, res, next) {
-                var now = +new Date();
-                var prev = ipMap[req.realip];
+                var now = Date.now();
+                var prev = ipMap[req.ip];
                 if (prev && prev + data.freq > now) return res.err(500, "操作太频繁");
-                ipMap[req.realip] = now;
+                ipMap[req.ip] = now;
                 next();
             });
         }
         if (data.params) {
             // 清除接口定义中不存在的参数
-            checks.push(paramClean(Object.keys(data.params)));
+            if (!data.additional)
+                checks.push(paramClean(Object.keys(data.params)));
             // 参数检查
             for (let k in data.params) {
                 let v = data.params[k];
@@ -438,7 +443,7 @@ class ApiBuilder {
         }
         if (data.grant) {
             // 权限检查
-            checks.push(conditionChecks(data.grant, 403));
+            checks.push(...conditionChecks(data.grant, 403));
         }
         if (data.pretreat) {
             // 预处理
@@ -446,28 +451,26 @@ class ApiBuilder {
         }
         if (data.check) {
             // check检查
-            checks = checks.concat(conditionChecks(data.check, 400));
+            checks.push(...conditionChecks(data.check, 400));
         }
         const sendErr = makeSendErr(data.error);
         const sendOk = makeSendOk(config.dev ? data : null, filename);
         // 构造接口实现函数
         let uri = data.url;
         if (!handler) {
-            devLogger.debug("define", data.method, uri, "---> Mock数据");
+            devLogger.warn("define", data.method, uri, "---> Mock数据");
             handler = function(req, res) {
                 console.log(data.ret);
                 res._sent = true;
                 res.json(data.ret || { no: 200 });
             };
-        } else {
-            devLogger.debug("define", data.method, uri);
         }
-        let args: Array<string | RequestHandler> = [uri];
+        let args: Array<string | RequestHandler> = [this.mountpath ? this.mountpath + uri : uri];
         // 初始化
         args.push(function(req, res, next) {
             res.err = sendErr;
             res.ok = sendOk;
-            req.body = Object.assign({}, req.query, req.body, req.fields, req.files);
+            req.body = Object.assign({}, req.params, req.query, req.body, req.fields, req.files);
             next();
         });
         // 参数、权限检查
@@ -510,7 +513,19 @@ class ApiBuilder {
             } else if (!res.finished && !res._sent) res.ok(ret);
         });
         for (let method of methods) {
+            devLogger.debug("define", method, args[0]);
             this.router[method].apply(this.router, args);
+            if (data.alias) {
+                for (let uri_alias of utils.arr(data.alias)) {
+                    if (!uri_alias.startsWith('/')) {
+                        uri_alias = path.join(uri, uri_alias);
+                        uri_alias = this.mountpath ? this.mountpath + uri_alias : uri_alias
+                    }
+                    args[0] = uri_alias;
+                    devLogger.debug("define", method, args[0]);
+                    this.router[method].apply(this.router, args);
+                }
+            }
         }
         return this;
     }
@@ -519,6 +534,6 @@ class ApiBuilder {
     }
 }
 
-export function apiBuilder() {
-    return new ApiBuilder();
+export function apiBuilder(mountpath: string) {
+    return new ApiBuilder(mountpath);
 }

@@ -6,20 +6,20 @@
             "lbl": "id",
             "type": "int"
         },
-        "user_id": {
-            "lbl": "user_id",
-            "rem": "收款方ID(冗余)",
-            "type": "int",
+        "account": {
+            "lbl": "收款方账号",
+            "len": [
+                0,
+                32
+            ],
             "need": "id"
         },
-        "qr_id": {
-            "lbl": "二维码ID",
-            "type": "int",
-            "need": "id"
-        },
-        "app_id": {
-            "lbl": "项目ID",
-            "type": "int",
+        "appname": {
+            "lbl": "项目名",
+            "len": [
+                0,
+                32
+            ],
             "need": "id"
         },
         "type": {
@@ -28,8 +28,7 @@
             "opts": [
                 "支付宝",
                 "微信"
-            ],
-            "need": "id"
+            ]
         },
         "state": {
             "lbl": "状态",
@@ -46,13 +45,6 @@
             "rem": "用户说自己已经付款了",
             "type": "int"
         },
-        "ext": {
-            "lbl": "商户自定义参数",
-            "len": [
-                0,
-                2048
-            ]
-        },
         "ret": {
             "lbl": "发货状态",
             "type": "int",
@@ -60,7 +52,7 @@
                 "待发货",
                 "发货失败",
                 "发货成功",
-                "手动发货"
+                "已手动发货"
             ],
             "need": "id"
         },
@@ -83,6 +75,20 @@
                 0,
                 256
             ]
+        },
+        "email": {
+            "lbl": "捐赠者邮箱",
+            "len": [
+                0,
+                64
+            ]
+        },
+        "remark": {
+            "lbl": "备注",
+            "len": [
+                0,
+                2048
+            ]
         }
     },
     "grant": "{U}.lvl<1",
@@ -92,20 +98,20 @@
     "ret": {
         "no": 200,
         "data": {
-            "id": 58850953,
-            "user_id": 24050193,
-            "qr_id": 59659993,
-            "app_id": 12498298,
-            "type": -46217184,
-            "create_at": 1571022490676,
-            "state": 71632270,
-            "pay_at": 1571752853905,
-            "ext": "5yphWhYGhEefJswx3TF83d8BSWHmB4WY4mG5FNP2yRQm6TCf7NfsWBNyJbMJQ4wQZXyNpE7xeaRGCEK2sR4pr8rZ6dmnSTCXSMS2DQGjswbzsWri33Had7hNyAZMxRxwZNPhYQwhjpcHrz3KaHXe6AiAH6kmb5SjQYG88jrMhAAcdNk4Xd57rYrZKcQ5QZfGwsiHEJEhRnWjs3ACC4CzQYfYCDYWjnGKXQehHXQM8fNw8fKsez2wRrhrzp6kP2CGbMNGaNcMmDQskRp7h8A6mxBKRB2eFRmYHzzrbRGDZeN2XpNdeSGSwd7zxARHW2ZYHZWZmKJ7WySSP63JeEtYRsz5YKF4cB3CCSr5seNjA3wMfM5SCM75pHw8FjWxiJFpnME6mD4xMTNaiEjSbHwpKKSJG78FDXFSkQWQQ3e7Zfy8GK26CzjTbbJx3xeymsy6F2tiHfMtCEGfBC7fRmBGy55TYsTCEsMEC6C7KnDJxaQszRH3XHSPJF5nfXyb3fppARdD7MbKT2zdszPC4esys66JSTD5TPZCNCxFibP8hMkxxr4NxYiw3jhyQEeXiaXFQAm4JKy5NePy6YARB2t8F3r5f2w5iRY4GQyYa34fYA3EbD5mxF2E33ZE2MER3xXN24SNaixs4WekaeA2n3YSkrikkdCnzwKaHWxEYHsWPwtKrdFtpjX6CAxdh3fEr2ZT8xbdPjnTRY8RrpFWjK63tkWeY8XWwHpWAbHfMhfyRpFDSNyYZEzwfakynJzZxQnMmNjFXES6C8rsc3cjPypThfW4bhwQaJy6HnPwpYMDY6W7NkycTpMbEaXdm2pfymN5QEkNnS8eWs57aJd7YkG65kRke7CfY3kpP87k877jWEsm6FkfAzGmhrdt5zk2dHsBZhDdCbpczdHpTfYifFSQASNT4sJQbGy3radyhaPEGNEMFRh5wHAwRRdacfeznGjzy3TYKTX4FcGCMGy8QkYMysK8rHCJ4y4FbePySJT5TNXyYR3kE3f4BMMniAAPPYA588K5n2ws8cEXrXde4cYkCj8rmRH2RtzN2sdj52cjX6r57NncX",
-            "ret": 75941439,
-            "msg": "xbZFdE2htBbwFdCWpBb78xDNEbXdiiKJ8NPEDYYTNrkrHcFnTzr6aaSEihiJc2Zekbd5hzYiynFatrHR56EhGZhchJh",
-            "price": 27160504,
-            "ip": "fnR3in6w5tpspJGGN7ewtjXKFaZS3FDDzZw3zHYznjT",
-            "ua": "2K2KfCBYtBfePXs2PsABwQw7AZeaPzwNWdNYGDNRsZxFac5a58TtbZ4GBtwR5XbTrsjmM5arinTXD2TYHWjhr7nT4624FtdjnXwMFJJ8KYHTyBn2NFzkK6iwifR6zaWkpQ3m8p8F77RNDTzrFfTpRPyx3w7rfW4TQFFMJfc4f8j4mMZsJZxJ2xT48fNKEYpm2HJ4dmebMMWbbiw68kfrYXMEjpXkasXiKmCpYxnjFXJ3RC"
+            "id": 63201586,
+            "account": "D63reiTRfWDDJmT3RP",
+            "appname": "6iDAH7",
+            "type": -86120038,
+            "create_at": 1579078537747,
+            "state": 8424894,
+            "pay_at": 1579364798228,
+            "ret": 30124557,
+            "msg": "faEwR28rGCn3f63jnY7PKsSz64AfJS6BKiP4TwaBkSbYprpXRtYTTHs5Z3xRiPFJWAMSY3zrGEf5Z8SKKfGNMA7Z2h4dSjBcpeBrb72nEaDPemNNwbYTYZFT84cwBEJyW7wpRZRAZMWRAp4BFMGppGZmNZYWwyrQXRCxWBQ8NPnFDQXkcXsBGJEFbnfAhHmkAiacd",
+            "price": 84804950,
+            "ip": "pZsWKheaaHMWz2ThR8GBmxziBks",
+            "ua": "zHHDMmEw7XbJwE8xESyep8GX66tyGZKzKf2nDe6aT4JKMNFbX38CFhnH2W7JMQTmBtZF5ZAWtEifWRRCdnkHeh78RWcGnQfnQpjPZZX5cdKGBtR7MZdDDXPENcnshk5mNd2eYEK228EYRSs54NdsS4C6cf7pdShdBxYErEWH3x583T3ce7wxhBWfeNipWhN88aH4CYSSHnJT3az3zwzCte7iJn7cxGkh4aGcpk3ZGHmehQ",
+            "email": "MM",
+            "remark": "F8FeWkM5yjQJ4fniYbtHTKKMyjwGARCJ3MHkENez74aZ7B8TfsS5isSJENyAAcNB2aakRbecErGhY22TxDYMC5GHiJJakDnn6fPcpCkbCP5YYDFpdnk2TjHWA6YprHPX3Nzm2x5e2dARcePejGez74jCTXAyCpMTaEnJ8JasX5XsQhCDW8XkjRKstecmfw5EaA3RRw6tR8QfDmH77SJtTBPc3jhCtsFNZWM7di8sFwKdFAk6zQY54ncRmhJksFdSi7BCy6ThAcFM4a5hPQ2NwAfJzAcB"
         }
     }
 }

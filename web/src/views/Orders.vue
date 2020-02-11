@@ -1,97 +1,37 @@
 <template>
 	<v-container class="pages-orders">
-		<v-row>
-			<v-col cols="4">
-				<v-select label="支付方式" v-model="query.type" :items="payType"></v-select>
-			</v-col>
-			<v-col cols="4">
-				<v-select label="支付状态" v-model="query.state" :items="stateType"></v-select>
-			</v-col>
-			<v-col cols="4">
-				<v-select label="发货状态" v-model="query.ret" :items="sendType"></v-select>
-			</v-col>
-			<v-col cols="8">
-				<v-menu ref="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="290px">
-					<template v-slot:activator="{ on }">
-						<v-text-field :value="query.dates" label="范围" prepend-icon="mdi-calendar-range" readonly v-on="on"></v-text-field>
-					</template>
-					<v-date-picker v-model="dates" range :max="now" no-title scrollable>
-						<v-spacer></v-spacer>
-						<v-btn text color="primary" @click="$refs.menu.save(query.dates='')">取消</v-btn>
-						<v-btn text color="primary" @click="$refs.menu.save(query.dates=dates.join('至'))">确定</v-btn>
-					</v-date-picker>
-				</v-menu>
-			</v-col>
-			<v-col cols="4" class="d-flex align-center justify-end">
-				<v-btn @click="search()" color="primary">搜索</v-btn>
-			</v-col>
-		</v-row>
-		<v-data-iterator :items="data.list" :server-items-length="data.total" :loading="data.loading" disable-pagination hide-default-footer>
-			<template v-slot:default="{items, isExpanded, expand}">
-				<v-row>
-					<v-col v-for="row in items" :key="row.id" cols="12" sm="6" md="4" lg="3">
-						<v-card>
-							<v-toolbar :color="row.ret>1&&row.state!=1?'success':['warning','error','primary'][row.state]" dark flat>
-								<v-toolbar-title>{{ `${row.app.title||row.app_id} - ¥${row.price}` }}</v-toolbar-title>
-								<v-spacer />
-								<v-btn icon @click="v=>expand(row,!isExpanded(row))">
-									<v-icon :style="{transform:`rotate(${isExpanded(row)?0:90}deg)`}">mdi-chevron-down</v-icon>
-								</v-btn>
-							</v-toolbar>
-							<v-divider></v-divider>
-							<v-list dense>
-								<v-list-item>
-									<v-list-item-content>下单时间:</v-list-item-content>
-									<v-list-item-content class="align-end">
-										<i-date :value="row.create_at"></i-date>
-									</v-list-item-content>
-								</v-list-item>
-								<v-list-item>
-									<v-list-item-content>支付时间:</v-list-item-content>
-									<v-list-item-content class="align-end">
-										<i-date v-if="row.pay_at" :value="row.pay_at-row.create_at" def="未支付"></i-date>
-									</v-list-item-content>
-								</v-list-item>
-								<v-list-item>
-									<v-list-item-content>支付方式:</v-list-item-content>
-									<v-list-item-content class="align-end">{{payType[row.type+1].text}}</v-list-item-content>
-								</v-list-item>
-								<v-list-item>
-									<v-list-item-content>订单状态:</v-list-item-content>
-									<v-list-item-content class="align-end">{{stateType[row.state+1].text}}</v-list-item-content>
-								</v-list-item>
-								<v-list-item v-if="isExpanded(row)">
-									<v-list-item-content>IP:</v-list-item-content>
-									<v-list-item-content class="align-end">{{ row.ip }}</v-list-item-content>
-								</v-list-item>
-								<v-list-item v-if="isExpanded(row)">
-									<v-list-item-content>客户端:</v-list-item-content>
-									<v-list-item-content class="align-end"><span :title="row.ua">{{ row.os }}</span></v-list-item-content>
-								</v-list-item>
-								<v-list-item>
-									<v-list-item-content>发货状态:</v-list-item-content>
-									<v-list-item-content class="align-end" :class="{'red--text':row.msg}" @click="row.msg&&$msg.alert(row.msg)">{{sendType[row.ret+1].text}}</v-list-item-content>
-								</v-list-item>
-								<v-list-item>
-									<v-list-item-content>备注信息:</v-list-item-content>
-									<v-list-item-content class="align-end" @click="row.ext&&$msg.alert(row.ext)">{{row.ext}}</v-list-item-content>
-								</v-list-item>
-							</v-list>
-							<v-card-actions>
-								<v-btn v-show="!row.app_id" @click="onOk(row,2)" text color="primary">确认</v-btn>
-								<v-btn v-show="!row.app_id" @click="onOk(row,2,1)" text>已发货</v-btn>
-								<v-btn v-show="row.app_id" @click="editExt(row)" text color="gray">修改备注</v-btn>
-								<v-btn v-show="row.app_id" @click="onOk(row,2,1)" text color="success">发货</v-btn>
-								<v-btn @click="onOk(row,1)" text color="error">支付失败</v-btn>
-							</v-card-actions>
-						</v-card>
-					</v-col>
-				</v-row>
+		<v-data-table dense class="elevation-1" :items="data.list" :options="data.options" @update:options="data.update($event)" :headers="headers" :server-items-length="data.total" :loading="data.loading" hide-default-footer>
+			<template v-slot:top>
+				<div class="fl-block pa2">
+					<i-radio all label="支付方式" :opts="payType" v-model="query.type"></i-radio>
+					<i-radio all label="支付状态" :opts="stateType" v-model="query.state"></i-radio>
+					<!-- <i-radio all label="发货状态" :opts="sendType" v-model="query.ret"></i-radio> -->
+					<v-btn @click="data.search(0)" color="success">刷新</v-btn>
+				</div>
 			</template>
-			<template v-slot:footer>
-				<v-btn block text @click="data.loadmore()" :disabled="data.loading||!data.hasMore" :loading="data.loading">{{data.hasMore?'加载更多':'没有更多了'}}</v-btn>
+			<template v-slot:item.create_at="{item}">
+				<i-date :value="item.create_at"></i-date>
 			</template>
-		</v-data-iterator>
+			<template v-slot:item.pay_at="{item}">
+				<i-date :value="item.pay_at==0?0:item.pay_at-item.create_at" def="未支付"></i-date>
+			</template>
+			<template v-slot:item.type="{item}">
+				<span :style="{color:payTypeColor[item.type]}">{{payType[item.type]}}</span>
+			</template>
+			<template v-slot:item.state="{item}">
+				<span :style="{color:stateTypeColor[item.state]}">{{stateType[item.state]}}</span>
+			</template>
+			<template v-slot:item.tools="{item}">
+				<v-btn small @click="onOk(item,2,1)" text color="primary">成功</v-btn>
+				<!-- <v-btn small @click="editExt(item)" text color="gray">修改备注</v-btn> -->
+				<v-btn small @click="onOk(item,1)" text color="error">失败</v-btn>
+			</template>
+			<template v-slot:footer v-if="$size.sm&&data.totalPage>1">
+				<v-divider></v-divider>
+				<i-page class="pa-2" circle :value="data.options.page-1" @input="data.options.page=$event+1" :total="data.total"></i-page>
+			</template>
+		</v-data-table>
+		<v-btn v-if="!$size.sm" class="mt-2" block text :loading="data.loading" @click="data.loadmore()">加载更多</v-btn>
 	</v-container>
 </template>
 <script>
@@ -103,16 +43,59 @@ export default {
 				state: 0,
 				ret: null,
 				dates: '',
+				appname: null,
 			}, true),
 			now: new Date().toISOString(),
-			payType: utils.opts(['支付宝', '微信'], true),
-			stateType: utils.opts(['待审核', '支付失败', '支付成功'], true),
-			sendType: utils.opts(['待发货', '发货失败', '发货成功', '手动发货'], true),
-			data: new utils.DataSource(this.load),
+			payType: ['支付宝', '微信'],
+			payTypeColor: ['#439EE2', '#52A64D'],
+			stateType: ['待审核', '捐赠失败', '捐赠成功'],
+			stateTypeColor: ["#000", '#ff6347', '#2cbe4e'],
+			sendType: ['待发货', '发货失败', '发货成功', '手动发货'],
+			data: new utils.DataSource(this.load).sortBy('id', 1),
 			dates: [],
 		}
 	},
 	computed: {
+		headers() {
+			var headers = [{
+				text: "项目",
+				value: 'appname',
+			}, {
+				text: "下单时间",
+				value: 'create_at',
+			}, {
+				text: "支付时间",
+				value: 'pay_at',
+			}, {
+				text: "支付方式",
+				value: 'type',
+			}, {
+				text: "订单状态",
+				value: 'state',
+			}, {
+				text: "IP",
+				value: 'ip',
+				adm: true,
+			}, {
+				text: "客户端",
+				value: 'ua',
+				adm: true,
+			}, {
+				text: "hook状态",
+				value: 'msg',
+			}, {
+				text: "备注信息",
+				value: 'remark',
+			}, {
+				text: "操作",
+				value: 'tools',
+			},]
+			if (this.query.appname)
+				headers = headers.slice(1)
+			if (!this.$user.adm())
+				headers = headers.filter(x => !x.adm)
+			return headers
+		},
 		table_data() {
 			let list = this.list.concat()
 			let name = this.sort.name
@@ -143,8 +126,7 @@ export default {
 				if (!result) return
 			}
 			let ret = await this.$post('orders/set', { id: row.id, state, send }, { loading: true })
-			if (ret.msg) ivue.alert(JSON.stringify(ret.msg), '发货接口报错')
-			else ivue.alert(send ? '发货成功' : '标记成功');
+			if (ret.msg) ivue.alert(JSON.stringify(ret.msg), 'hook接口报错')
 			if (ret.ret != null) row.ret = ret.ret
 			row.state = state
 		},
@@ -163,11 +145,11 @@ export default {
 				type: this.query.type,
 				state: this.query.state,
 				ret: this.query.ret,
+				appname: this.query.appname,
 				minCreateAt: min ? +new Date(min) : null,
 				maxCreateAt: max ? +new Date(max) + 86400e3 : null,
 			})
-			let { total, list, apps } = await this.$get('orders/list', data, { loading: false })
-			utils.leftJoin(list, apps, 'app')
+			let { total, list } = await this.$get('orders/list', data, { loading: false })
 			for (let item of list) {
 				this.format(item)
 			}

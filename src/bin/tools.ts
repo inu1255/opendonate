@@ -1,9 +1,13 @@
 import { argv } from 'yargs';
 import * as readline from 'readline';
+import db from '../common/db';
+import * as fs from 'fs-extra'
+import * as path from 'path';
+import * as utils from '../common/utils';
+import * as config from '../common/config';
 
 declare module "express-serve-static-core" {
     interface Request {
-        realip: string;
         ua: string;
     }
 }

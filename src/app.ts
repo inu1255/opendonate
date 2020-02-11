@@ -1,4 +1,3 @@
-import { port } from "./common/config";
 import * as cofs from "fs-extra";
 import * as formidable from 'formidable'
 import { Request, Response } from "express-serve-static-core";
@@ -12,6 +11,7 @@ import * as lib from "./lib";
 import * as utils from "./common/utils";
 import * as path from "path";
 import * as compression from "compression";
+import './lib/watch';
 import './lib/tasks';
 const app = express();
 
@@ -28,11 +28,11 @@ declare global {
 
 declare module "express-serve-static-core" {
     interface Request {
-        realip: string;
         ua: string;
     }
 }
 
+app.set('trust proxy', 'loopback') 
 if (config.dev) { // 如果是调试模式，则允许跨域
     app.use(utils.crossMiddle());
 } else {
@@ -46,22 +46,16 @@ if (config.dev) {
 app.use(express.static("public"));
 app.use(json({ limit: "5mb" }));
 app.use(urlencoded({ extended: false, limit: "5mb" }));
-app.use("/api", connectLogger);
-app.use("/api", utils.multipartMiddle(config.upload));
-app.use("/api", session);
-app.use("/api", lib.expressSessionUpdate);
-app.use("/api", function(req, res, next) {
-    var ip = utils.first(req.headers["x-forwarded-for"]) || req.connection.remoteAddress;
-    ip = ip.split(",")[0];
-    if (ip.substr(0, 7) == "::ffff:") {
-        ip = ip.substr(7);
-    }
-    req.realip = ip;
+app.use(connectLogger);
+app.use(utils.multipartMiddle(config.upload));
+app.use(session);
+app.use(lib.expressSessionUpdate);
+app.use(function(req, res, next) {
     req.ua = req.headers["user-agent"] || "";
     if (req.ua.length > 256) req.ua = req.ua.slice(0, 256);
     next();
 });
-app.use("/api", apiBuilder().walk("./api", path.join(__dirname, "./routes")).build());
+app.use(apiBuilder("/api").walk("./api", path.join(__dirname, "./routes")).build());
 
 app.get("*", function(req, res, next) {
     if (req.path.indexOf('.') < 0)
@@ -69,8 +63,8 @@ app.get("*", function(req, res, next) {
     else next()
 });
 
-app.listen(port, async function() {
+app.listen(config.port, async function() {
     await cofs.mkdirs("public/pic/");
     await cofs.mkdirs("public/tmp/");
-    console.log("Listening on http://localhost:" + port);
+    console.log("Listening on http://localhost:" + config.port);
 });

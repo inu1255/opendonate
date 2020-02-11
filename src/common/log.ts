@@ -9,6 +9,7 @@ import * as TransportStream from "winston-transport";
 import * as colors from "colors/safe";
 import * as expressWinston from "express-winston";
 import * as config from "./config";
+import 'winston-daily-rotate-file';
 import { SPLAT } from "triple-beam";
 const { combine, timestamp, errors, colorize, printf } = format;
 
@@ -36,12 +37,17 @@ const consoleTransport = new transports.Console({
 });
 
 function makeLogger(label: string, level: string = undefined) {
-    let fileTransport = new transports.File({
-        filename: `log/app.log`, format: combine(colorize({
+    let fileTransport = new transports.DailyRotateFile({
+        format: combine(colorize({
             all: true, colors: {
                 debug: 'gray',
-            }
-        }), consoleFormat), maxsize: 5242880, maxFiles: 5, level
+            },
+        }), consoleFormat),
+        filename: `log/app-%DATE%.log`,
+        level,
+        datePattern: 'YYYY-MM-DD',
+        maxSize: '20m',
+        maxFiles: '180d'
     });
     let trans: TransportStream[] = [fileTransport];
     trans.push(consoleTransport);
@@ -81,8 +87,13 @@ export const connectLogger = expressWinston.logger({
                 return JSON.stringify({ uid, ip, ua, method, url, statusCode, no, responseTime, timestamp: info.timestamp });
             }), maxsize: 5242880, maxFiles: 5, level: 'debug'
         }),
-        new transports.File({
-            filename: `log/app.log`, format: accessFormat, maxsize: 5242880, maxFiles: 5, level: 'debug'
+        new transports.DailyRotateFile({
+            format: accessFormat,
+            filename: `log/app-%DATE%.log`,
+            level: 'debug',
+            datePattern: 'YYYY-MM-DD',
+            maxSize: '20m',
+            maxFiles: '180d'
         }),
         new transports.Console({
             format: accessFormat, level: 'debug'
@@ -94,7 +105,7 @@ export const connectLogger = expressWinston.logger({
     expressFormat: true,
     colorize: true,
     dynamicMeta: function(req, res) {
-        var ip = req.realip;
+        var ip = req.ip;
         var ua = req.ua;
         var uid: number;
         var no = res.no;

@@ -8,7 +8,8 @@ import { RequestHandler, Request, Response } from "express";
 import { Duplex, Stream } from "stream";
 import * as child_process from "child_process";
 import { readFileSync, writeFile } from "fs";
-import { join } from "path";
+import * as path from "path";
+import * as fs from "fs";
 const _lock = {};
 
 interface CrossMiddleOption {
@@ -335,7 +336,7 @@ export function unique<T>(list: T[]) {
 }
 
 /**
- * 复制一个去掉keys和undefine的body对象
+ * 修改body, 去掉keys和undefine
  */
 export function clearKeys<T>(body: T, keys: string[] | { [key: string]: any }): T {
     if (keys instanceof Array) { // 清除keys中的字段
@@ -508,36 +509,56 @@ export function proxy(req: Request, res: Response, config: ProxyOptions): Promis
 }
 
 /**
- *
  * @param {Request} req
  * @param {Response} res
  * @param {number} update_at 修改时间
- * @param {()=>any} fn
  */
-export function send304(req: Request, res: Response, update_at: number, fn: () => any) {
-    let modtime = new Date(req.headers["if-modified-since"] || 0).getTime();
+export function send304<T>(req: Request, res: Response, update_at: number): boolean {
+    let prev = req.headers["if-modified-since"]
+    let modtime = prev ? new Date(prev).getTime() : 0;
     if (modtime >= update_at) {
         res._sent = true;
         res.writeHead(304);
         res.end("Not Modified");
-    } else {
-        return fn();
+        return true;
     }
+    return false;
 }
 
 /**
  *
  * @param {Response} res
- * @param {number} update_at 修改时间
- * @param {number} [maxAge=0] 缓存时间
+ * @param {number} update_at 修改时间, ms
+ * @param {number} [maxAge=0] 缓存时间, ms
  */
-export function sendCache(res: Response, update_at: number, maxAge: number) {
+export function sendCache(res: Response, update_at: number, maxAge?: number) {
     maxAge = maxAge || 0;
     res.removeHeader("Pragma");
     res.writeHead(200, {
         "last-modified": new Date().toUTCString(),
         "cache-control": "max-age=" + Math.floor(maxAge / 1e3),
         expires: new Date(update_at + maxAge).toUTCString()
+    });
+}
+
+export function sendFile304(req: Request, res: Response, filename: string, maxAge?: number) {
+    return new Promise((resolve, reject) => {
+        fs.stat(filename, function(err, stat) {
+            let update_at = err ? 0 : stat.mtimeMs;
+            if (send304(req, res, update_at))
+                return resolve();
+            res._sent = true;
+            if (err && err.code == 'ENOENT') {
+                res.writeHead(404);
+                res.end("Not Found");
+                return resolve();
+            }
+            if (err) return reject(err);
+            if (/\.(js|txt|json)$/)
+                res.setHeader('Content-Type', 'application/json;charset:utf-8;')
+            sendCache(res, update_at, maxAge)
+            fs.createReadStream(filename).pipe(res).on('close', resolve);
+        })
     });
 }
 
@@ -716,10 +737,10 @@ export function xlsx2json(buf, sheetNames?) {
 
 /**
  * @param {string} command
- * @param {{ encoding: BufferEncoding } & ExecOptions} options
+ * @param {{ encoding: BufferEncoding } & ExecOptions} [options]
  * @returns {Promise<{stdout:string,stderr:string}>}
  */
-export function exec(command: string, options: { encoding: BufferEncoding } & child_process.ExecOptions): Promise<{ stdout: string; stderr: string }> {
+export function exec(command: string, options?: { encoding: BufferEncoding } & child_process.ExecOptions): Promise<{ stdout: string; stderr: string }> {
     return new Promise((resolve, reject) => {
         child_process.exec(command, options, function(err, stdout, stderr) {
             if (err) return reject(err);
@@ -827,7 +848,7 @@ export function expect(value: any, toBe: any, ctx?: { nullable?: (path: string) 
  */
 export function createLocal<T extends object>(def: T, filename: string): T {
     def = Object.assign({}, def);
-    filename = join("config", filename);
+    filename = path.join("config", filename);
     try {
         def = Object.assign(def, JSON.parse(readFileSync(filename, "utf8")));
     } catch (error) { }
@@ -925,4 +946,63 @@ export function findNext(text: string, s: string, i?: number, pars?: { [left: st
         i++;
     }
     return i;
+}
+
+
+/**
+ * 限制并发
+ */
+export class AsyncLimit {
+    limit: number;
+    running: Function[];
+    queue: Function[];
+    pms: Promise<void>;
+    private resolve: (value?: any) => void;
+    private reject: (reason?: any) => void;
+    constructor(limit: number) {
+        this.limit = limit;
+        this.running = []
+        this.queue = []
+        this.pms = new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+        });
+    }
+	/**
+	 * 限制并发并执行函数
+	 */
+    push(fn: Function) {
+        if (this.running.length < this.limit) {
+            let pms = fn();
+            this.running.push(pms);
+            pms.then(() => {
+                let idx = this.running.indexOf(pms)
+                this.running.splice(idx, 1)
+                if (this.queue.length) this.push(this.queue.shift());
+                else if (!this.running.length) this.resolve();
+            }, this.reject);
+        } else this.queue.push(fn);
+    }
+    then(onfulfilled: (value: void) => void | PromiseLike<void>, onrejected: (reason: any) => PromiseLike<never>) {
+        return this.pms.then(onfulfilled, onrejected)
+    }
+    catch(onrejected: (reason: any) => PromiseLike<never>) {
+        return this.pms.catch(onrejected)
+    }
+    finally(onfinally: () => void) {
+        return this.pms.finally(onfinally)
+    }
+}
+
+export function userHome(id: number) {
+    var s = id.toString(16)
+    var n = Math.max(Math.ceil(s.length / 3), 2) * 3;
+    if (s.length < n) s = '0'.repeat(n - s.length) + s;
+    var i = 0;
+    var a = [];
+    while (i < s.length) {
+        a.push(s.slice(i, i + 3));
+        i += 3;
+    }
+    return a.join('/');
 }

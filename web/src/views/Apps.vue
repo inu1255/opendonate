@@ -1,56 +1,52 @@
 <template>
 	<v-container class="views-apps">
-		<v-flex>
-			<v-spacer></v-spacer>
-			<v-btn @click="add()" color="primary">添加</v-btn>
-		</v-flex>
-		<v-data-iterator :items="data.list" :server-items-length="data.total" :loading="data.loading" disable-pagination hide-default-footer>
-			<template v-slot:default="{items, isExpanded, expand}">
-				<v-row>
-					<v-col v-for="row in items" :key="row.id" cols="12" md="6" lg="4">
-						<v-card>
-							<v-toolbar :color="['success','primary'][row.type]" dark flat>
-								<v-toolbar-title>{{ `${row.title}` }}</v-toolbar-title>
-								<v-spacer />
-								<v-btn icon @click="v=>expand(row,!isExpanded(row))">
-									<v-icon>{{isExpanded(row)?'mdi-eye':'mdi-eye-off'}}</v-icon>
-								</v-btn>
-							</v-toolbar>
-							<v-divider></v-divider>
-							<v-list dense>
-								<v-list-item>
-									<v-list-item-content>
-										<v-list-item-title>发货接口</v-list-item-title>
-										<v-list-item-subtitle>{{row.url}}</v-list-item-subtitle>
-									</v-list-item-content>
-								</v-list-item>
-								<v-list-item v-if="isExpanded(row)">
-									<v-list-item-content>
-										<v-list-item-title>密钥</v-list-item-title>
-										<v-list-item-subtitle>{{row.cer}}</v-list-item-subtitle>
-									</v-list-item-content>
-								</v-list-item>
-								<v-list-item>
-									<v-list-item-content>
-										<v-list-item-title>回跳网址</v-list-item-title>
-										<v-list-item-subtitle>{{row.back}}</v-list-item-subtitle>
-									</v-list-item-content>
-								</v-list-item>
-							</v-list>
-							<v-card-actions>
-								<v-spacer></v-spacer>
-								<v-btn @click="test(row)" text color="warning">测试</v-btn>
-								<v-btn @click="add(row)" text>修改</v-btn>
-								<v-btn @click="onDel(row)" text color="error">删除</v-btn>
-							</v-card-actions>
-						</v-card>
-					</v-col>
-				</v-row>
+		<v-data-table class="elevation-1" show-expand :items="data.list" :options="data.options" @update:options="data.update($event)" :headers="headers" :server-items-length="data.total" :loading="data.loading" hide-default-footer>
+			<template v-slot:top>
+				<v-toolbar flat color="white">
+					<v-toolbar-title>{{$route.name}}</v-toolbar-title>
+					<v-spacer></v-spacer>
+					<v-btn @click="add()" color="primary">添加</v-btn>
+					<v-btn color="success" @click="data.search()" class="ml-2">搜索</v-btn>
+				</v-toolbar>
 			</template>
-			<template v-slot:footer>
-				<v-btn block text @click="data.loadmore()" :disabled="data.loading||!data.hasMore" :loading="data.loading">{{data.hasMore?'加载更多':'没有更多了'}}</v-btn>
+			<template v-slot:item.appname="{item}">
+				<a :href="`https://github.com/${$user.info.account}/${item.appname}`" target="_blank">{{item.appname}}</a>
 			</template>
-		</v-data-iterator>
+			<template v-slot:item.tools="{item}">
+				<v-btn v-if="item.url" @click="test(item)" small text color="warning">测试</v-btn>
+				<v-btn @click="add(item)" small text>修改</v-btn>
+				<v-btn @click="onDel(item)" small text color="error">删除</v-btn>
+			</template>
+			<template v-slot:expanded-item="{headers,item}">
+				<td :colspan="headers.length">
+					<v-list dense>
+						<v-list-item>
+							<v-list-item-content>
+								<v-list-item-title>hook接口</v-list-item-title>
+								<v-list-item-subtitle>{{item.url}}</v-list-item-subtitle>
+							</v-list-item-content>
+						</v-list-item>
+						<v-list-item>
+							<v-list-item-content>
+								<v-list-item-title>接口密钥</v-list-item-title>
+								<v-list-item-subtitle>{{item.cer}}</v-list-item-subtitle>
+							</v-list-item-content>
+						</v-list-item>
+						<v-list-item>
+							<v-list-item-content>
+								<v-list-item-title>回跳网址</v-list-item-title>
+								<v-list-item-subtitle>{{item.back}}</v-list-item-subtitle>
+							</v-list-item-content>
+						</v-list-item>
+					</v-list>
+				</td>
+			</template>
+			<template v-slot:footer v-if="$size.sm&&data.totalPage>1">
+				<v-divider></v-divider>
+				<i-page class="pa-2" circle :value="data.options.page-1" @input="data.options.page=$event+1" :total="data.total"></i-page>
+			</template>
+		</v-data-table>
+		<v-btn v-if="!$size.sm" class="mt-2" block text :loading="data.loading" @click="data.loadmore()">加载更多</v-btn>
 	</v-container>
 </template>
 <script>
@@ -60,11 +56,22 @@ export default {
 	data() {
 		return {
 			data: new DataSource(this.query),
+			headers: [{
+				text: '项目',
+				value: 'title',
+			}, {
+				text: '项目地址',
+				value: 'appname',
+			}, {
+				text: '操作',
+				value: 'tools',
+			}],
+			showItem: {},
 		}
 	},
 	methods: {
 		async query(body) {
-			let { list, total } = await this.$get('app/list', Object.assign({}, body))
+			let { list, total } = await this.$get('app/list', Object.assign({account: this.$user.info.account}, body))
 			return { list, total };
 		},
 		async add(value) {
@@ -76,11 +83,18 @@ export default {
 						"len": [0, 16],
 						"need": "id"
 					},
+					"appname": {
+						"lbl": "项目地址",
+						"len": [0, 16],
+						"need": "id",
+						"props": {
+							"prefix": `https://github.com/${this.$user.info.account}/`,
+						}
+					},
 					"url": {
-						"lbl": "自动发货接口",
+						"lbl": "hook接口",
 						"rem": "http://xxx.com?foo=bar 收到请求格式 http://xxx.com?foo=bar&ext=xxx&r=xxx&s=sign",
-						"len": [0, 256],
-						"need": "id"
+						"len": [0, 256]
 					},
 					"cer": {
 						"lbl": "签名字符串",

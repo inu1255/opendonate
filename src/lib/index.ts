@@ -1,6 +1,5 @@
 import db from "../common/db";
 import { code_expire } from "../common/config";
-import { Encrypt } from "../common/utils";
 const sess_update = {}; // 用户session变化时间
 
 const USERINFO = ["passwd", "invite_id", "unionid"];
@@ -32,18 +31,16 @@ export function clearUser(user: de.User, keep?: Set<string>) {
 
 /**
  * 过滤用户信息
- * @param req
- * @param user
  */
-export async function getUserInfo(req: ExpressRequest, user?: de.User) {
-    if (!user) {
-        user = await db.select("user").where("id", req.session.user.id).first();
-    }
+export async function getUserInfo(req: ExpressRequest, user?: de.User | number) {
+    if (!user) user = req.session.user.id;
+    if (typeof user === "number")
+        user = await db.select<de.User>("user").where("id", user).first();
     if (!user) {
         delete req.session.user;
         return
     }
-    user.t = new Date().getTime();
+    user.login_at = Date.now();
     req.session.user = user;
     if (!user.invite_code) {
         user.invite_code = user.id.toString(10);
@@ -68,7 +65,7 @@ export function expressSessionUpdate(req: ExpressRequest, res: ExpressResponse, 
         // 如果系统重启，每个未登录的用户都需要更新
         t = sess_update[user.id] = +new Date();
     }
-    if (t <= user.t) {
+    if (t <= user.login_at) {
         // 如果已经更新
         next();
         return;
@@ -85,10 +82,7 @@ export function expressSessionUpdate(req: ExpressRequest, res: ExpressResponse, 
  * @param code 验证码
  */
 export async function checkCode(title: string, code: string) {
-    const one = await db
-        .select("verify")
-        .where("title", title)
-        .first();
+    const one = await db.select("verify").where("title", title).first();
     if (!one) {
         return 407;
     }

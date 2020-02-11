@@ -1,4 +1,5 @@
 config/*
-public/123/
-public/tmp/*
+public/
 dist/
+log/*
+!.gitkeep

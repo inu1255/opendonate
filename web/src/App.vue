@@ -3,7 +3,7 @@
 		<v-app-bar v-if="!meta.full" app flat absolute style="background: #fafafa;">
 			<v-app-bar-nav-icon class="d-inline-flex d-sm-none" @click="drawer=true"></v-app-bar-nav-icon>
 			<v-btn text to="/">
-				<v-toolbar-title>盆儿支付</v-toolbar-title>
+				<v-toolbar-title>{{$config.name}}</v-toolbar-title>
 			</v-btn>
 			<v-spacer />
 			<v-btn icon>
@@ -22,7 +22,7 @@
 					<v-list-item to="/setting">
 						<v-list-item-title>设置</v-list-item-title>
 					</v-list-item>
-					<v-list-item to="/login">
+					<v-list-item @click="$user.logout(true)">
 						<v-list-item-title>注销</v-list-item-title>
 					</v-list-item>
 				</v-list>
@@ -59,7 +59,7 @@
 				</v-fade-transition>
 			</div>
 		</v-content>
-		<i-modal :open="$root.loading">
+		<i-modal :open="$root.loading" padding="36px">
 			<i-icon name="loading" loading size="36px" color="white" />
 		</i-modal>
 		<v-fab-transition>

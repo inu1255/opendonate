@@ -39,6 +39,10 @@ body {
 .van-icon,
 button {
 	cursor: pointer;
+	outline: none;
+}
+* {
+	outline: none;
 }
 a {
 	text-decoration: none;
@@ -57,9 +61,6 @@ pre {
 .btn {
 	.magic-color(@blue, #333);
 }
-.ml1 {
-	margin-left: 1em;
-}
 .dense {
 	line-height: 1em;
 }
@@ -72,10 +73,13 @@ pre {
 .sized {
 	display: inline-block;
 }
-/* 常用样式 */
-.pt-2 {
-	padding-top: 0.2rem;
+.fl-block {
+	overflow: hidden;
+	> div {
+		float: left;
+	}
 }
+/* 常用样式 */
 .flex-center {
 	display: flex;
 	align-items: center;
@@ -111,7 +115,6 @@ pre {
 .flex {
 	display: flex;
 }
-.fa,
 .fr {
 	float: right;
 }
@@ -124,17 +127,26 @@ pre {
 .tar {
 	text-align: right;
 }
-.p1 {
+.pa1 {
 	padding: 0.5em;
 }
-.p2 {
+.pa2 {
 	padding: 1em;
 }
-.p3 {
+.pa3 {
 	padding: 1.5em;
+}
+.pt2 {
+	padding-top: 1em;
 }
 .mr1 {
 	margin-right: 1em;
+}
+.ml1 {
+	margin-left: 1em;
+}
+.lh1 {
+	line-height: 1;
 }
 /* transition */
 .it-fade-slide-down-enter-active,
@@ -156,7 +168,39 @@ pre {
 .it-fade-leave-active {
 	opacity: 0;
 }
-/* element样式 */
-.el-table .cell {
-	line-height: 1.2em;
+/* vuetify样式 */
+td.v-data-table__mobile-row {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+	min-height: 24px;
+	height: inherit;
+	.v-data-table__mobile-row__header {
+		white-space: nowrap;
+	}
+}
+.v-toolbar {
+	.v-text-field__details {
+		display: none;
+	}
+}
+
+.v-data-table.v-data-table--dense {
+	td,
+	th {
+		padding: 0 8px;
+	}
+	td {
+		font-size: 12px;
+	}
+}
+.flex > .v-text-field + .v-btn {
+	margin-bottom: 21px;
+}
+
+.v-btn {
+	text-transform: none;
+}
+.v-data-table tbody tr.v-data-table__expanded__content {
+	box-shadow: unset;
 }

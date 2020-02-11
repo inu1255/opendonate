@@ -6,9 +6,8 @@
             "lbl": "id",
             "type": "int"
         },
-        "create_id": {
-            "lbl": "创建用户ID",
-            "type": "int"
+        "account": {
+            "lbl": "创建用户账号"
         },
         "title": {
             "lbl": "项目名称",
@@ -70,7 +69,7 @@
         }
     },
     "grant": "{U}",
-    "pretreat": "if({U}.lvl<1){}.create_id={U}.id",
+    "pretreat": "if({U}.lvl!=0){}.account={U}.account",
     "ret": {
         "no": 200,
         "data": {

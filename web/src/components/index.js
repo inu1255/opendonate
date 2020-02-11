@@ -5,7 +5,6 @@ import IModal from './IModal';
 import ICircle from './ICircle';
 import IIcon from './IIcon';
 import IButton from './IButton';
-import IAppBar from './IAppBar';
 import ITabs from './ITabs';
 import IDrawer from './IDrawer';
 import IGroup from './IGroup';
@@ -14,13 +13,15 @@ import IImg from './IImg';
 import IRate from './IRate';
 import IDate from './IDate';
 import IInput from './IInput';
-import ISpacer from './ISpacer';
 import ITable from './ITable';
 import IRadio from './IRadio';
 import ISpan from './ISpan';
 import IList from './IList';
 import IListItem from './IListItem';
 import IRender from './IEditor/render';
+import IPage from './IPage';
+import IForm from './IForm';
+import IDrop from './IDrop';
 
 const components = {
 	IImagePreview,
@@ -30,7 +31,6 @@ const components = {
 	ICircle,
 	IIcon,
 	IButton,
-	IAppBar,
 	ITabs,
 	IDrawer,
 	IGroup,
@@ -39,13 +39,15 @@ const components = {
 	IRate,
 	IDate,
 	IInput,
-	ISpacer,
 	ITable,
 	IRadio,
 	ISpan,
 	IList,
 	IListItem,
 	IRender,
+	IPage,
+	IForm,
+	IDrop,
 };
 const install = function(Vue, opts = {}) {
 	for (let k in components) {

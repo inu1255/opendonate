@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import zhHans from 'vuetify/es5/locale/zh-Hans';
+import Vuetify from 'vuetify';
 
 import IvForm from './IvForm';
 Vue.component('IvForm', IvForm);

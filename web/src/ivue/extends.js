@@ -3,6 +3,7 @@ import * as utils from '../common/utils';
 import { store } from '../common/store';
 import './rules';
 import * as ivue from './';
+import config from '../common/config';
 
 /**
  * @param {string} [name] 
@@ -27,11 +28,15 @@ utils.http.use(function(config, next) {
 	config.withCredentials = true;
 	return next(config).then(function(res) {
 		if (res.status == 404)
-			return Promise.reject({ no: 404, msg: '资源不存在' });
+			return Promise.reject({ no: 404, msg: '接口不存在' });
 		if (res.status == 500)
 			return Promise.reject({ no: 500, msg: '系统故障' });
 		if (/json/.test(res.headers['content-type']))
-			return JSON.parse(res.data);
+			try {
+				return JSON.parse(res.data);
+			} catch (e) {
+				return res;
+			}
 		return res;
 	});
 });
@@ -77,6 +82,8 @@ utils.http.use(function(config, next) {
 
 Vue.prototype.$get = utils.http.get.bind(utils.http);
 Vue.prototype.$post = utils.http.post.bind(utils.http);
-Vue.prototype.$loading = loading;
+Vue.prototype.$with = loading;
 Vue.prototype.$user = store.user;
 Vue.prototype.$size = store.size;
+Vue.prototype.$config = config;
+Vue.prototype.$utils = utils;

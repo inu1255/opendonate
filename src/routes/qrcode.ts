@@ -8,7 +8,7 @@ export async function add(req: ExpressRequest, res: ExpressResponse) {
     let user = req.session.user;
     if (body.id) {
         let sql = db.select('qrcode').where({ id: body.id })
-        if (user.lvl > 0) sql.where({ create_id: user.id })
+        if (user.lvl > 0) sql.where({ account: user.account })
         let old = await sql.first();
         if (!old) return 404;
         utils.clearKeys(body, old) as db.Qrcode
@@ -17,7 +17,7 @@ export async function add(req: ExpressRequest, res: ExpressResponse) {
         return body;
     }
     let data: db.Qrcode = Object.assign({
-        create_id: user.id,
+        account: user.account,
     }, body)
     try {
         data.id = await db.insert('qrcode', data).id()
@@ -32,19 +32,19 @@ export async function del(req: ExpressRequest, res: ExpressResponse) {
     let body: apar.QrcodeDelBody = req.body
     let user = req.session.user;
     let sql = db.delete('qrcode').where({ id: body.id })
-    if (user.lvl > 0) sql.where({ create_id: user.id })
+    if (user.lvl > 0) sql.where({ account: user.account })
     let pac = await sql
     return { n: pac.affectedRows }
 }
 export async function list(req: ExpressRequest, res: ExpressResponse) {
     let body: apar.QrcodeListBody = req.body
     let user = req.session.user;
-    let sql = db.select('qrcode', 'id,create_id,price,alipay,alipay_url,wechat');
+    let sql = db.select('qrcode', 'id,account,price,alipay,alipay_url,wechat');
     if (body.id != null) {
         sql.where('id=?', [body.id]);
     }
-    if (body.create_id != null) {
-        sql.where('create_id=?', [body.create_id]);
+    if (body.account != null) {
+        sql.where('account=?', body.account);
     }
     if (body.minPrice != null) {
         sql.where('price>=?', [body.minPrice]);

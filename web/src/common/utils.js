@@ -1,3 +1,5 @@
+import config from './config';
+
 /**
  * @param {string} tag 
  * @return {HTMLElement}
@@ -44,6 +46,7 @@ export function encodeURI(str) {
 	return (str + '').replace(/%/g, '%25')
 		.replace(/=/g, '%3D')
 		.replace(/\?/g, '%3F')
+		.replace(/\+/g, '%2B')
 		.replace(/&/g, '%26');
 };
 /**
@@ -77,15 +80,32 @@ export function decodeQuery(str) {
 };
 
 /**
- * 格式化时间显示
- * @param {number} t 
- * @param {string} format 
+ * 获取距离1970-01-05(星期1)的天数
+ * @param {Date} date 
  */
-export function format(t, format) {
-	if (typeof t === "number" && t < 1e10) {
-		t *= 1e3;
-	}
+export function getDay(date) {
+	if (!getDay._cache) getDay._cache = new Date('1970-01-05 00:00').getTime();
+	return Math.floor((date.getTime() - getDay._cache) / 86400e3);
+}
+
+/**
+ * 格式化时间显示
+ * @param {string} format 
+ * @param {number|Date} t 
+ */
+export function format(format, t) {
 	t = new Date(t);
+	if (!format) {
+		let now = new Date();
+		if (getDay(now) - getDay(t) == 1)
+			format = '昨天 hh:mm';
+		else if (t.getFullYear() != now.getFullYear())
+			format = 'YYYY-MM-DD hh:mm';
+		else if (t.getMonth() != now.getMonth() || t.getDate() != now.getDate())
+			format = 'MM-DD hh:mm';
+		else
+			format = 'hh:mm';
+	}
 	var Y = (t.getFullYear() + 1e4).toString().slice(1);
 	return format.replace(/YYYY/g, Y)
 		.replace(/YY/g, Y.slice(2))
@@ -813,9 +833,18 @@ export function randomNumber(len) {
 	return code;
 }
 
+/**
+ * @param {number} max
+ */
+export function randN(max) {
+	return Math.floor(Math.random() * max);
+}
+
+const iswx = navigator.userAgent.toLowerCase().indexOf('micromessenger') >= 0;
 export const ua = {
 	appid: 'wxaafbc399a80e1c49',
-	iswx: navigator.userAgent.toLowerCase().indexOf('micromessenger') >= 0,
+	iswx,
+	wx: iswx && window.wx,
 	ismb: /android|iphone|symbianos|windows phone|ipad|ipod/.test(navigator.userAgent.toLowerCase()),
 	baseURL: location.protocol + '//' + location.host + (location.port ? ':' + location.port : location.port)
 };
@@ -861,6 +890,10 @@ export function remove(arr, obj) {
 	return arr;
 }
 
+export function arr(val) {
+	return val instanceof Array ? val : [val];
+}
+
 export class DataSource {
 	constructor(query, isList) {
 		this.query = query;
@@ -875,6 +908,16 @@ export class DataSource {
 		this.list = [];
 		this.total = 0;
 		this.hasMore = true;
+	}
+	sortBy(val, desc) {
+		val = arr(val);
+		desc = !!desc;
+		this.options.sortBy = val;
+		this.options.sortDesc = val.map(() => desc);
+		return this;
+	}
+	get totalPage() {
+		return Math.ceil(this.total / this.options.itemsPerPage || 1);
 	}
 	async search(page) {
 		let idx = page;
@@ -909,7 +952,7 @@ export class DataSource {
 		this.loading = false;
 	}
 	update(e) {
-		this.options = e;
+		this.options = Object.assign({}, this.options, e);
 		return this.search();
 	}
 	loadmore() {
@@ -988,7 +1031,7 @@ export function os(ua) {
 }
 
 /**
- * 复制一个去掉keys和undefine的body对象
+ * 修改body, 去掉keys和undefine
  * @template T
  * @param {T} body 
  * @param {string[] | { [key: string]: any }} keys 
@@ -1016,4 +1059,57 @@ export function isEmpty(obj) {
 		break;
 	}
 	return ok;
+}
+
+export function githubLogin() {
+	let client_id = config.github.client_id;
+	let redirect_uri = location.origin + '/api/oauth2/github?from=' + encodeURIComponent(location.href.endsWith('/login') ? location.origin : location.href);
+	location.href = `https://github.com/login/oauth/authorize?client_id=${client_id}&redirect_uri=${encodeURIComponent(redirect_uri)}`;
+}
+
+export function findNext(text, s, i, pars) {
+	if (!pars)
+		pars = {
+			'"': '"\\',
+			"'": "'\\",
+			"`": "`\\",
+			"{": "}",
+			"(": ")",
+			"[": "]",
+			"/": ["/", "\\", /[^\w)]/],
+			"//": "\n",
+			"/*": ["*/"]
+		};
+	var stack = [];
+	var prev;
+	while (i < text.length) {
+		var p = stack[stack.length - 1];
+		var c = text[i];
+		if (p) {
+			let p0 = p[0];
+			let p1 = p[1];
+			if (text.substr(i, p0.length) == p0)
+				stack.pop(), i += p0.length - 1;
+			else if (p1)
+				c == p1 && (i++);
+			else {
+				var v = pars[text.substr(i, 2)];
+				if (v && (!v[2] || v[2].test(prev)))
+					stack.push(v), i++;
+				else if ((v = pars[c]) && (!v[2] || v[2].test(prev)))
+					stack.push(v);
+			}
+		} else {
+			if (text.substr(i, s.length) == s)
+				break;
+			var v = pars[text.substr(i, 2)];
+			if (v && (!v[2] || v[2].test(prev)))
+				stack.push(v), i++;
+			else if ((v = pars[c]) && (!v[2] || v[2].test(prev)))
+				stack.push(v);
+		}
+		if (!/\s/.test(c)) prev = c;
+		i++;
+	}
+	return i;
 }

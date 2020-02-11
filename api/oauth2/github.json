@@ -1,0 +1,16 @@
+{
+	"name": "github授权登录",
+	"method": "GET",
+	"params": {
+		"from": {
+			"lbl": "从哪里发起的请求"
+		},
+		"code": {
+			"need": true,
+			"rem": "The code you received as a response to Step 1."
+		}
+	},
+	"ret": {
+		"status": 304
+	}
+}

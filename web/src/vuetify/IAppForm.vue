@@ -25,7 +25,7 @@ export default {
 	props: {
 		params: { required: true },
 		value: {},
-		width: {},
+		width: { default: 600 },
 		title: String,
 		successColor: { type: String, default: 'success' },
 		successText: { type: String, default: '确定' },

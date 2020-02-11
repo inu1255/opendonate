@@ -38,7 +38,7 @@
 		}
 	},
 	"grant": "{U}",
-	"pretreat": "if({U}.lvl>1){}.invite_id={U}.id",
+	"pretreat": "if({U}.lvl!=0){}.invite_id={U}.id",
 	"ret": {
 		"no": 200
 	}

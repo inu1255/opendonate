@@ -5,7 +5,8 @@
   "scripts": {
     "start": "vue-cli-service serve --open",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build && npm run publish",
+    "publish": "rm -rf ../public/static ../public/js ../public/images && cp -r dist/* ../public"
   },
   "dependencies": {
     "core-js": "^2.6.5",
@@ -19,6 +20,7 @@
     "@vue/cli-service": "^3.9.0",
     "less": "^3.0.4",
     "less-loader": "^4.1.0",
+    "vue-i18n": "^8.15.3",
     "vue-template-compiler": "^2.6.10"
   },
   "postcss": {

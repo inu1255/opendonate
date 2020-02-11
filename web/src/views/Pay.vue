@@ -2,11 +2,15 @@
 	<v-container v-if="order" class="views-pay">
 		<v-card class="pay" :elevation="2">
 			<v-card-title>
-				收款方：<b>{{order.app_name}}</b>
+				收款方：<a :href="`https://github.com/${order.account}/${order.appname}`" target="_blank"><b>{{order.account}}/{{order.appname}}</b></a>
 			</v-card-title>
-			<v-card-text class="content">
+			<v-card-text v-if="s<=0" class="content">
+				订单已超期
+			</v-card-text>
+			<v-card-text v-else class="content">
 				<img v-show="type==1" style="height:34px;" src="@/assets/wechat.png">
-				<div class="detail">扫一扫付款(元)</div>
+				<div class="detail" v-if="type!=null">扫一扫付款(元)</div>
+				<div class="detail" v-else>请选择支付方式</div>
 				<div v-if="order.price" class="money">{{(order.price/100).toFixed(2)}}</div>
 				<br v-else>
 				<v-card v-show="type!=null" class="qrcode" :elevation="1">
@@ -71,7 +75,9 @@
 		</v-card>
 		<v-dialog :value="needType" width="360" persistent>
 			<v-card>
-				<v-card-title>选择支付方式</v-card-title>
+				<v-card-title v-if="env.iswx">推荐用微信支付</v-card-title>
+				<v-card-title v-else-if="env.ismb">推荐用支付宝支付</v-card-title>
+				<v-card-title v-else>选择支付方式</v-card-title>
 				<v-card-actions>
 					<v-spacer></v-spacer>
 					<v-btn color="primary" @click="setType(0)">支付宝</v-btn>
@@ -97,7 +103,7 @@ export default {
 	},
 	watch: {
 		choose_type() {
-			this.wait = this.s - 10;
+			this.wait = this.s - 5;
 		}
 	},
 	computed: {
@@ -119,7 +125,6 @@ export default {
 			return parseInt(this.$route.params.id);
 		},
 		type() {
-			console.log(this.query.type, this.choose_type)
 			return this.query.type || this.choose_type;
 		},
 		payType() {
@@ -139,9 +144,11 @@ export default {
 	methods: {
 		async iampay() {
 			let id = this.id;
-			await this.$get('orders/iampay', { id, token: this.query.t, type: this.type })
-			await ivue.alert('您的订单已收到\n商家确认后会在2小时内发货')
-			if (this.order.back) location.href = this.order.back
+			await this.$get('orders/iampay', { id, token: this.query.token, type: this.type })
+			await ivue.alert('您的捐赠已提交\n作者确认后会显示在捐赠名单上')
+			if (this.order.back) window.open(this.order.back)
+			let { account, appname } = this.order
+			this.$router.go(-1)
 		},
 		setType(t) {
 			this.choose_type = t
@@ -156,13 +163,19 @@ export default {
 			let id = this.id;
 			let query = this.query;
 			if (id) {
-				order = await this.$get('orders/get', { id, t: query.token })
+				try {
+					order = await this.$get('orders/get', { id, t: query.token })
+				} catch (e) {
+					if (e.no == 404) {
+						alert('订单不存在')
+						window.open("about:blank", "_self").close()
+					} else throw e
+				}
 			} else {
+				let { account, appname, price, email, remark } = query
 				let data = {
-					aid: query.aid,
-					price: query.price,
+					account, appname, price, email, remark,
 					type: this.type,
-					ext: query.ext,
 					json: 1,
 				}
 				order = await this.$post('orders/create', data)
@@ -170,9 +183,9 @@ export default {
 			}
 			if (order) {
 				this.s = Math.floor((order.create_at + 300e3 - Date.now()) / 1e3)
-				this.wait = this.s - 10;
-				this.order = order;
+				this.wait = this.s - 5;
 			}
+			this.order = order;
 		},
 	},
 	mounted() {

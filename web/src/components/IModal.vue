@@ -1,14 +1,45 @@
 <template>
 	<transition name="it-fade">
-		<div class="i-modal" v-if="open">
-			<div class="i-modal-mask" @click="$emit('update:open',false)"></div>
-			<div class="i-modal-wrapper" :style="{background}">
+		<div class="i-modal" :class="{'v-menu__content--active':open}" v-if="open">
+			<div class="i-modal-mask" @click="persistent||$emit('update:open',false)"></div>
+			<div class="i-modal-wrapper" :style="{background,padding}">
 				<slot></slot>
 			</div>
 		</div>
 	</transition>
 </template>
+<script>
+import { pushIndex } from './zindex';
+export default {
+	props: {
+		open: {},
+		autofocus: Boolean,
+		padding: String,
+		background: String,
+		persistent: Boolean,
+	},
+	watch: {
+		open: {
+			immediate: true,
+			handler() {
+				if (this.open) {
+					this.$nextTick(() => {
+						pushIndex(this.$el)
+						if (this.autofocus) {
+							var input = this.$el.querySelector('input')
+							input && input.focus();
+						}
+					})
+				}
+			}
+		}
+	}
+}
+</script>
 <style lang="less">
+.i-modal.v-menu__content--active {
+	pointer-events: auto;
+}
 .i-modal {
 	width: 100vw;
 	height: 100vh;
@@ -22,7 +53,6 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	flex-direction: column;
 	background: rgba(127, 127, 127, 0.5);
 }
 .i-modal-mask {
@@ -40,32 +70,9 @@
 	z-index: 100;
 	width: auto;
 	display: flex;
-	align-items: center;
 	flex-direction: column;
+	overflow: auto;
 	max-width: 100%;
-	border-radius: 0.5rem;
+	max-height: 100%;
 }
 </style>
-<script>
-import { pushIndex } from './zindex';
-export default {
-	props: {
-		open: {},
-		autofocus: Boolean,
-		background: { type: String, default: '' },
-	},
-	watch: {
-		open: {
-			immediate: true,
-			handler() {
-				if (this.open && this.autofocus)
-					this.$nextTick(() => {
-						pushIndex(this.$el)
-						var input = this.$el.querySelector('input')
-						input && input.focus();
-					})
-			}
-		}
-	}
-}
-</script>

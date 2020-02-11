@@ -13,5 +13,5 @@
 		"resolveJsonModule": true,
 		"typeRoots": ["node_modules/@types", "./typings"]
 	},
-	"exclude": ["node_modules", "dist", "./public", "./bin"]
+	"exclude": ["node_modules", "dist", "./public", "./bin", "web"]
 }

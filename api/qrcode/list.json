@@ -6,9 +6,12 @@
             "lbl": "id",
             "type": "int"
         },
-        "create_id": {
-            "lbl": "创建用户ID",
-            "type": "int"
+        "account": {
+            "lbl": "创建用户账号",
+            "len": [
+                0,
+                32
+            ]
         },
         "minPrice": {
             "lbl": "金额下限",
@@ -75,27 +78,27 @@
         }
     },
     "grant": "{U}",
-    "pretreat": "if({U}.lvl<1){}.create_id={U}.id",
+    "pretreat": "if({U}.lvl!=0){}.account={U}.account",
     "ret": {
         "no": 200,
         "data": {
             "total": 100,
             "list": [
                 {
-                    "id": 29326972,
-                    "create_id": 39573520,
-                    "price": -71785986,
-                    "alipay": "CEywwc5jQkHNkaf5YwA3QpkD54tzSpCMzixZP87Rz5mMCa56eJ3tE",
-                    "alipay_url": "e7686cwFHkbn8z",
-                    "wechat": "M8Pb52cZijQehmwDJttAWMcpGf3fN7w2iPfCA7Q7bPtsBXxNABww2tYHNSKWiFja3rD2PM66XYnEjSe7DMeM4XbtXwi"
+                    "id": 8034374,
+                    "account": "kGiDzfk",
+                    "price": -51547798,
+                    "alipay": "SDbxYKRZt6XFNteBxZGnZrD6e5zRm6JtPpYT6WFHS82x4QNKeaK2PjFaw4N5E3JJAFyD73RbH7RPzNz224YYATab27bd4r6B8xDBDePXHwk5NakrhBxRkDQjphkj2nWkkxEfAbhEPt4W5EDmWPXepriAcwF8rnzMRiKsJPPEiKTXaprG3azhppm8ptRSpbndrzJ7y8QNSABYG2yykSD4TDbm2exbYrcnQ2KrnxssMYmmQp3W",
+                    "alipay_url": "rZ7i22kYzstQ2Sc7RchmKExQbCPsy7xfCw5pQw3QHpDXASwcxZdZ54XikhG85QWdS84Z4xAQEfZr3Yh7sJX2e3ppXdFzp8criN",
+                    "wechat": "SpEEfYiEnmAKCQSwZrxMe7mFAfyjC6twwrFEnZn6e6fciFpeYCcEKcyBJmaawtAiRmsEYA2WxaMm5F6FywZRd8RkCWRbRy5ijz3MrnsMKjiR7pZn42NPNxXdj5rSM"
                 },
                 {
-                    "id": 37573918,
-                    "create_id": 63953933,
-                    "price": 13649720,
-                    "alipay": "Hhbx3MBws5sde6xYzpYjchpcayhMXFsGTHh8K2NwaFjZ37FKeDa3z4",
-                    "alipay_url": "F6cEFpQixCKsb5573aBDXSwnrxQ8edXfEtfrYY7td4DDN8",
-                    "wechat": "CpKNQxTaWtGGWCjRGEniWQZhwFMP5BpNQRDkWCx3yZssrfrw3yYbriT"
+                    "id": 79914335,
+                    "account": "bs3a8JZ25dec6fcaGbpSNKraA35QJeG",
+                    "price": -57342960,
+                    "alipay": "XWc3MJ3YrQcykhnTAXf2eAAhyPS23DFpn44dS3584EzC5R73N8yFmzZNTcyrDQeDa5hZkmsKSYZRNxNQ6eH6YyXzEZtKFjbPRCEFJdQsHQCaRsGattEZtMsdE4xfNed5hebcSpGtXGysGEYhy7AWCWT7DxxnnXpRYZhinXAmeGam3Fy84P6xrrz58jmwG7yZEEfAYrsRMhSpSiTsDYXHSh3HrC",
+                    "alipay_url": "BYDQc42FS6w6fRxmDCJsZ27DhZBbSbm5jBiKkGYk4FxbTwDXd7yc7b8isRYz",
+                    "wechat": "E75DsrfBCNdd4r37rYPfZJQDMbbwHP8SAeB"
                 }
             ]
         }

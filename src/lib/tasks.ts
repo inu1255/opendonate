@@ -1,4 +1,5 @@
 import { taskLogger } from "../common/log";
+import db from "../common/db"
 // const store = utils.createLocal({
 // }, '.materail_crawer');
 
@@ -22,3 +23,7 @@ function addTask(name: string, ms: number, fn: Function) {
     }
     call();
 }
+
+addTask('清理5分钟没有支付的订单', 300e3, async function() {
+    await db.execSQL('delete from orders where type is null and create_at<?', [Date.now() - 300e3], { ignore: true });
+})

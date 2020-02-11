@@ -23,11 +23,12 @@ export default {
 		onclick(e) {
 			if (this.copy) {
 				if (utils.copy(this.$el.innerText))
-					this.$toast.success(this.title || '' + '已复制')
+					this.$toast.success((this.title || '') + '已复制')
 				else
 					utils.selectNode(this.$el)
 			} else if (this.select)
 				utils.selectNode(this.$el)
+			this.$emit('click', e);
 		}
 	},
 	mounted() {

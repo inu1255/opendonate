@@ -31,7 +31,7 @@ export const root = [{
 	meta: { login: true }
 }, {
 	path: '/orders',
-	name: '我的订单',
+	name: '捐款确认',
 	component: () => import('./views/Orders.vue'),
 	meta: { login: true }
 }, {
@@ -43,11 +43,12 @@ export const root = [{
 	component: () => import('./views/Pay.vue'),
 	meta: { full: true }
 }, {
-	path: '/donate/:id',
+	path: '/:account/:appname',
 	component: () => import('./views/Donate.vue'),
 	meta: { full: true }
 }, ];
 
+root.forEach(x => x.props = (route) => Object.assign({ path: x.path, meta: x.meta, name: x.name }, route.query, route.params));
 var title = document.title;
 const router = new Router({
 	mode: 'history',
@@ -126,9 +127,9 @@ router.beforeEach(function(to, from, next) {
 	} else if (to.meta.login && !store.user.online) {
 		if (store.user.online == null) // 不确定是否在线
 			store.user.checkLogin().then(function(x) {
-				return x ? next() : ua.iswx ? wxLogin(ua.appid) : next({ path: '/login', query: { f: to.fullPath } });
+				return x ? next() : ua.wx ? wxLogin(ua.appid) : next({ path: '/login', query: { f: to.fullPath } });
 			});
-		else if (ua.iswx) // 不在线
+		else if (ua.wx) // 不在线
 			wxLogin(ua.appid);
 		else
 			next({ path: '/login', query: { f: to.fullPath } });

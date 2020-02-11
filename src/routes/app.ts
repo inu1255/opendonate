@@ -8,7 +8,7 @@ export async function add(req: ExpressRequest, res: ExpressResponse) {
     let user = req.session.user;
     if (body.id) {
         let sql = db.select<db.App>('app').where({ id: body.id })
-        if (user.lvl > 0) sql.where({ create_id: user.id })
+        if (user.lvl > 0) sql.where({ account: user.account })
         let old = await sql.first();
         if (!old) return 404;
         utils.clearKeys(body, old)
@@ -17,7 +17,8 @@ export async function add(req: ExpressRequest, res: ExpressResponse) {
         return body
     }
     let data: db.App = Object.assign({
-        create_id: user.id,
+        account: user.account,
+        appname: body.appname,
     }, body)
     data.id = await db.insert('app', data).id()
     return data
@@ -26,19 +27,19 @@ export async function del(req: ExpressRequest, res: ExpressResponse) {
     let body: apar.AppDelBody = req.body
     let user = req.session.user;
     let sql = db.delete('app').where({ id: body.id })
-    if (user.lvl > 0) sql.where({ create_id: user.id })
+    if (user.lvl > 0) sql.where({ account: user.account })
     let pac = await sql
     return { n: pac.affectedRows }
 }
 export async function list(req: ExpressRequest, res: ExpressResponse) {
     let body: apar.AppListBody = req.body
     let user = req.session.user;
-    let sql = db.select('app', 'id,create_id,title,url,cer,back,type');
+    let sql = db.select('app', 'id,account,appname,title,url,cer,back');
     if (body.id != null) {
         sql.where('id=?', [body.id]);
     }
-    if (body.create_id != null) {
-        sql.where('create_id=?', [body.create_id]);
+    if (body.account != null) {
+        sql.where('account=?', [body.account]);
     }
     if (body.title != null) {
         sql.where('title like ?', ['%' + body.title + '%']);
@@ -64,7 +65,7 @@ export async function list(req: ExpressRequest, res: ExpressResponse) {
 export async function get(req: ExpressRequest, res: ExpressResponse) {
     let body: apar.AppGetBody = req.body
     let user = req.session.user;
-    let data = await db.select('app,user', 'app.id,app.title,app.create_id,user.name create_name').where('app.create_id=user.id and app.id=? and app.type=1', [body.id]).first();
+    let data = await db.select('app,user', 'app.id,app.title,user.name create_name').where('app.account=user.account and app.account=? and app.appname=?', [body.account, body.appname]).first();
     if (!data) return 404;
     return data;
 }

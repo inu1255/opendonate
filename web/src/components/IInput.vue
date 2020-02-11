@@ -55,6 +55,7 @@ export default {
 </script>
 <style lang="less">
 @import "~@/styles/define.less";
+@import "./input.less";
 .i-input {
 	position: relative;
 	display: inline-block;

@@ -1,18 +1,23 @@
 {
-    "name": "用户说自己已支付",
-    "method": "get",
-    "params": {
-        "id": {
-            "lbl": "订单ID",
-            "type": "int",
-            "need": true
-        },
-        "token": {
-            "lbl": "签名",
-            "need": true
-        }
-    },
-    "ret": {
-        "no": 200
-    }
+	"name": "用户说自己已支付",
+	"method": "get",
+	"params": {
+		"id": {
+			"lbl": "订单ID",
+			"type": "int",
+			"need": true
+		},
+		"type": {
+			"lbl": "支付方式",
+			"type": "int",
+			"need": true
+		},
+		"token": {
+			"lbl": "签名",
+			"need": true
+		}
+	},
+	"ret": {
+		"no": 200
+	}
 }

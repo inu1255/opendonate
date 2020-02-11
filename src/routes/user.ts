@@ -320,21 +320,9 @@ export async function edit(req: ExpressRequest, res: ExpressResponse) {
 }
 
 export async function search(req: ExpressRequest, res: ExpressResponse) {
-    // gparam "../../api/user/search.json" --ts
-    interface SearchBody {
-        user_id?: number; // 用户ID
-        invite_id?: number; // 邀请用户ID
-        email?: string; // 邮箱
-        account?: string; // 账号
-        page?: number; // 页码 默认:0
-        pageSize?: number; // 分页大小 默认:10
-        sortBy?: string; // 排序方式
-        desc?: number; // 降序
-    }
-
-    let body: SearchBody = req.body
+    let body: apar.UserSearchBody = req.body
     let user = req.session.user;
-    let sql = db.select("user left join (select uid,max(create_at) get_coupon_at from coupon_word_log group by uid) as a on user.id=a.uid", "user.*,a.get_coupon_at");
+    let sql = db.select("user");
     if (body.user_id) {
         sql.where({ id: body.user_id });
     }
@@ -361,6 +349,7 @@ export async function get(req: ExpressRequest, res: ExpressResponse) {
     let body: apar.UserGetBody = req.body
     let user = req.session.user;
     let data = await db.select('user').where({ id: body.id }).first();
+    if (!data) return 404;
     return lib.clearUser(data);
 }
 
@@ -369,6 +358,6 @@ db.insertNotExist("user", {
     avatar: "https://cn.gravatar.com/avatar/ab898e14a3dd6b89debe79f7440a2be4?s=64&d=identicon&r=PG",
     account: "inu1255",
     passwd: "199337",
-    role: "admin",
+    lvl: 0,
     create_at: +new Date()
-}).where("role", "admin");
+}).where("lvl", 0).then(_ => 0);

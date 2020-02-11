@@ -18,6 +18,9 @@ export class User {
 	get(id, name) {
 		return this.umap[id] || { id: 0, lvl: 1000, name: name || '-', avatar: 'http://lorempixel.com/64/64/?' + Math.random() };
 	}
+	adm() {
+		return this.info && this.info.lvl === 0;
+	}
 	setInfo(info) {
 		this.info = info;
 		if (info == null) {

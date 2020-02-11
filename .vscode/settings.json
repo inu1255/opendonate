@@ -1,0 +1,8 @@
+{
+	"json.schemas": [
+		{
+			"fileMatch": ["*api/*.json"], // 匹配 API目录下的 *.json 文件
+			"url": ".vscode/api.schema.json" // 使用相对于根目录下的 api.schema.json 定义的 schema
+		}
+	]
+}

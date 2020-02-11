@@ -1,8 +1,8 @@
 
-const appname = "perpay";
+const appname = "opendonate";
 const config = {
     appname,
-    title: "盆儿支付",
+    title: "开源涓涓",
     apiDir: "api",
     port: 3000,
     mysql: {
@@ -19,6 +19,10 @@ const config = {
     email: {
         user: "admin@inu1255.cn",
         pass: ""
+    },
+    wechat: { // 公众平台
+        appid: "",
+        secret: "",
     },
     sina: {
         username: "",
@@ -47,6 +51,10 @@ const config = {
         tNum: "T170317004608",
         appcode: '4fb83fa01c2f4772be7bf9e080e62ca8',
     },
+    github: {
+        client_id: '71bf1da5f2f12cd33862',
+        client_secret: '',
+    }
 };
 
 export = config
